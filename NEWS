@@ -1,0 +1,18 @@
+;; This news file for ‘guix pull --news’ is pretty much -*- Scheme -*-.
+;;
+;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;
+;; Copying and distribution of this file, with or without modification, are
+;; permitted in any medium without royalty provided the copyright notice and
+;; this notice are preserved.
+
+(channel-news
+ (version 0)
+
+ (entry (commit "89150992df4089bb0012cb62510cc52420b95a3d")
+        (title (en "New packages from the past!"))
+        (body (en "You have chosen the @code{guix-past} channel,
+congratulations!  This channel brings you brand new software packages from
+the past that you can deploy here and now.  You're welcome to contribute your
+favorite pieces of historical free software at
+@url{https://gitlab.inria.fr/guix-hpc/guix-past}!"))))

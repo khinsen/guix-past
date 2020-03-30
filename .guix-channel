@@ -1,0 +1,6 @@
+;; This is a channel for GNU Guix!
+
+(channel
+ (version 0)
+ (directory "modules")
+ (news-file "NEWS"))
