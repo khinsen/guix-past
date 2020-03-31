@@ -1,6 +1,6 @@
 Guix-Past: Bringing software from the past to the present
 =================================================================
-[![SWH](https://archive.softwareheritage.org/badge/origin/https://gitlab.inria.fr/guix-hpc/guix-past/)](https://archive.softwareheritage.org/browse/origin/https://gitlab.inria.fr/guix-hpc/guix-past/)
+[![SWH](https://archive.softwareheritage.org/badge/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)](https://archive.softwareheritage.org/browse/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)
 
 So you want to reproduce the software environment that you used ten
 years ago, say, as the basis of the conclusions of a scientific paper?
@@ -29,11 +29,9 @@ something along these lines:
 manual](https://guix.gnu.org/manual/devel/en/html_node/Channels.html)
 for more information on channels.
 
-Enjoy it, and grow it!
-
-       ⇒ https://gitlab.inria.fr/guix-hpc/guix-past ⇐
+Enjoy it, and [grow it](https://gitlab.inria.fr/guix-hpc/guix-past)!
 
 # Meta-History
 
-This channel saw the light as part of the ReScience “Ten Years
-Reproducibility Challenge”: <https://rescience.github.io/ten-years/>.
+This channel saw the light as part of the ReScience C [Ten Years
+Reproducibility Challenge](https://rescience.github.io/ten-years/).
