@@ -114,6 +114,7 @@
                                         (install-file file site)))
                                     (find-files "guile" "\\.scm"))
                           #t))))))
+      (outputs '("out" "debug"))
       (native-inputs
        `(("autoconf" ,autoconf-2.59)
          ("automake" ,automake-1.9)
