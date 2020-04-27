@@ -57,6 +57,8 @@
                  (base32
                   "1fp8ymrpkkcbssyh1acfkdjpyslajc68y1qjdn0f472l1gpj0ja7"))
                 (modules '((guix build utils)))
+                (patches
+                 (search-patches "past/patches/libchop-anchor-based.patch"))
                 (snippet
                  '(begin
                     ;; Include all the libtirpc headers necessary to get the
