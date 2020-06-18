@@ -1,0 +1,24 @@
+# Continuous integration on gitlab.inria.fr.
+
+stages:
+  - lint
+  - build
+
+before_script:
+  - export GUIX_PACKAGE_PATH="$PWD/modules"
+  - export PAST_PACKAGES="$(guix package -A | grep -E "past\/" | cut -f1,2 | tr '\t' '@')"
+
+lint:
+  stage: lint
+  script:
+    - guix lint $PAST_PACKAGES
+
+build_1_1_0:
+  stage: build
+  script:
+    - guix time-machine --commit=d62c9b2671be55ae0305bebfda17b595f33797f2 -- build $PAST_PACKAGES
+
+build_lastest:
+  stage: build
+  script:
+    - guix time-machine -- build $PAST_PACKAGES
