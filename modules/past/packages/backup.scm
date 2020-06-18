@@ -80,9 +80,17 @@
                     (add-before 'build 'set-libtirpc-include-path
                       (lambda* (#:key inputs #:allow-other-keys)
                         ;; Allow <rpc/rpc.h> & co. to be found.
-                        (let ((libtirpc (assoc-ref inputs "libtirpc")))
-                          (setenv "CPATH"
-                                  (string-append (getenv "CPATH")
+                        (let ((libtirpc (assoc-ref inputs "libtirpc"))
+
+                              ;; With the Guix 'core-updates' merge in
+                              ;; 4bdf4182fe080c3409f6ef9b410146b67cfa2595
+                              ;; (May 2020), we moved from CPATH to
+                              ;; C_INCLUDE_PATH & co.
+                              (variable (if (getenv "CPATH")
+                                            "CPATH"
+                                            "C_INCLUDE_PATH")))
+                          (setenv variable
+                                  (string-append (getenv variable)
                                                  ":" libtirpc
                                                  "/include/tirpc"))
                           #t)))
