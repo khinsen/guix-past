@@ -16,9 +16,9 @@ lint:
 build_1_1_0:
   stage: build
   script:
-    - guix time-machine --commit=d62c9b2671be55ae0305bebfda17b595f33797f2 -- build $PAST_PACKAGES
+    - guix time-machine --commit=d62c9b2671be55ae0305bebfda17b595f33797f2 -- build $PAST_PACKAGES --keep-going
 
 build_lastest:
   stage: build
   script:
-    - guix time-machine -- build $PAST_PACKAGES
+    - guix time-machine -- build $PAST_PACKAGES --keep-going
