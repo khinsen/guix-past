@@ -29,7 +29,7 @@ something along these lines:
 manual](https://guix.gnu.org/manual/devel/en/html_node/Channels.html)
 for more information on channels.
 
-Enjoy it, and [grow it](https://gitlab.inria.fr/guix-hpc/guix-past)!
+Read the “Hacking” section for information on how to grow this channel!
 
 # Pre-Built Binaries
 
@@ -68,6 +68,25 @@ Pre-built binaries for Guix Past packages are served from
 	 ```
 	 guix archive --authorize < key.txt
 	 ```
+
+# Hacking
+
+This channel provides exclusively free software in accordance with the
+[FSDG](https://www.gnu.org/distros/free-system-distribution-guidelines.html).
+
+The module hierarchy mirrors that of upstream Guix.  For example, the
+`(past packages autotools)` module contains old versions of packages
+found in `(gnu packages autotools)`.
+
+To loosen coupling with Guix modules, it is sometimes a good idea to
+resort to `specification->package` instead of relying on modules and
+variable names, which are subject to change.
+
+It makes most sense to add software dating back to before 2019, around
+the time where [time travel became
+possible](https://guix.gnu.org/blog/2018/gnu-guix-and-guixsd-0.15.0-released/).
+
+That’s it!  Now you’re welcome to contribute your bits!
 
 # Meta-History
 
