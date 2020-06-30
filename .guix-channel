@@ -3,4 +3,6 @@
 (channel
  (version 0)
  (directory "modules")
- (news-file "NEWS"))
+ (news-file "NEWS")
+ (keyring-reference "keyring")
+ (url "https://gitlab.inria.fr/guix-hpc/guix-past")) ;the primary URL
