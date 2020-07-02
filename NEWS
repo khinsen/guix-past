@@ -9,6 +9,34 @@
 (channel-news
  (version 0)
 
+ (entry (commit "0c119db2ea86a389769f4d2b9c6f5c41c027e336")
+        (title (en "Guix-Past channel can now be authenticated"))
+        (body (en "The Guix-Past channel can now be authenticated, using the
+@uref{https://guix.gnu.org/blog/2020/securing-updates/, brand new mechanism}
+that just landed in Guix.  To enable it, you need a recent Guix (July 2020 or
+later), and you need to add the @code{introduction} field to your
+@file{channels.scm} file, like so:
+
+@lisp
+(cons (channel
+        (name 'guix-past)
+        (url \"https://gitlab.inria.fr/guix-hpc/guix-past\")
+
+        ;; The following lines allow 'guix pull' to authenticate
+        ;; this channel.  It requires a recent Guix (July 2020)
+        ;; and can be omitted with older versions.
+        (introduction
+         (make-channel-introduction
+          \"0c119db2ea86a389769f4d2b9c6f5c41c027e336\"
+          (openpgp-fingerprint
+           \"3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5\"))))
+      %default-channels)
+@end lisp
+
+If you're using an older Guix version, simply omit the @code{introduction} field.
+
+Enjoy!")))
+
  (entry (commit "89150992df4089bb0012cb62510cc52420b95a3d")
         (title (en "New packages from the past!"))
         (body (en "You have chosen the @code{guix-past} channel,
