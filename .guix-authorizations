@@ -4,9 +4,9 @@
 (authorizations
  (version 0)
 
- ("3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"
-  (name "civodul"))
- ("A28B F40C 3E55 1372 662D  14F7 41AA E7DC CA3D 8351"
-  (name "efraim"))
- ("BCA6 89B6 3655 3801 C3C6  2150 197A 5888 235F ACAC"
-  (name "rekado")))
+ (("3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"
+   (name "civodul"))
+  ("A28B F40C 3E55 1372 662D  14F7 41AA E7DC CA3D 8351"
+   (name "efraim"))
+  ("BCA6 89B6 3655 3801 C3C6  2150 197A 5888 235F ACAC"
+   (name "rekado"))))
