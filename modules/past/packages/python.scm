@@ -175,20 +175,20 @@ ecosystem supported both Numeric and numarray, with the choice made
 at build time.")
     (license license:bsd-3)))
 
-(define-public python24-numpy
+(define-public python24-numpy-1.0
   (package
     (name "python24-numpy")
-    (version "1.1.1")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/numpy/numpy")
               (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (file-name (git-file-name "numpy" version))
        (sha256
         (base32
-         "04dkq22yyl8ap4b5mmgalnp9wrs5pdi5j9wwkv2pabnljfrwikiy"))))
+         "0648id8jfjscv7y672ppl72nsywpi8i426498c76a087w8749xy1"))))
     (build-system python-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -219,12 +219,30 @@ lapack openblas lapack openblas))))
                    (invoke "python" "-c"
                            "import numpy; print numpy; numpy.test(level = 9999); numpy.show_config()"))))
              #t)))))
+    (properties '((release-date "2007-11-08")))
+    (synopsis "NumPy 1.0.4, released on 2007-11-08")
     (home-page "https://numpy.org")
-    (synopsis "NumPy 1.1.1, released on 2008-07-31")
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
-    (properties '((release-date "2008-07-31")))
     (license license:bsd-3)))
+
+(define-public python24-numpy-1.1
+  (package
+    (inherit python24-numpy-1.0)
+    (name "python24-numpy")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/numpy/numpy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name "numpy" version))
+       (sha256
+        (base32
+         "04dkq22yyl8ap4b5mmgalnp9wrs5pdi5j9wwkv2pabnljfrwikiy"))))
+    (properties '((release-date "2008-07-31")))
+    (synopsis "NumPy 1.1.1, released on 2008-07-31")))
