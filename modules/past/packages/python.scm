@@ -102,4 +102,12 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
      `(("libnsl" ,libnsl)
        ("libtirpc" ,libtirpc)
        ("openssl" ,openssl-1.0)
-       ,@(alist-delete "openssl" (package-inputs python-2))))))
+       ,@(alist-delete "openssl" (package-inputs python-2))))
+    (properties '((release-date "2008-12-19")))
+    (home-page "https://www.python.org/downloads/release/python-246/")
+    (synopsis "Python 2.4.6, released 2008-12-19")
+    (description
+     "The last bugfix release of the Python 2.4 series, which
+started with 2.4.0, released on 2004-11-30.  Python 2.5 was
+released on 2006-09-19.")))
+
