@@ -1,5 +1,6 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
-;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -18,6 +19,9 @@
 
 (define-module (past packages python)
   #:use-module (guix)
+  #:use-module (guix build-system python)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcl)
@@ -111,3 +115,61 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
 started with 2.4.0, released on 2004-11-30.  Python 2.5 was
 released on 2006-09-19.")))
 
+(define-public python24-numarray
+  (package
+    (name "python24-numarray")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/numpy/Old Numarray/" version
+             "/numarray-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x1i4j7yni7k4p9kjxs1lgln1psdmyrz65wp2yr35yn292iw2vbg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (invoke "python" "setup.py" "config" "build"
+                     "--gencode" "--use_lapack")))
+         (add-after 'unpack 'find-lapack-and-openblas
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lapack (assoc-ref inputs "lapack"))
+                   (blas   (assoc-ref inputs "openblas")))
+               (substitute* "cfg_packages.py"
+                 (("lapack_libs = .*'m']")
+                  "lapack_libs = ['lapack', 'openblas', 'm']\n")
+                 (("lapack_dirs = .*")
+                  (string-append "lapack_dirs = ['"
+                                 lapack "/lib', '" blas "/lib']\n"))
+                 (("lapack_include_dirs = .*")
+                  (string-append "lapack_include_dirs = ['"
+                                 lapack "/include', '" blas "/include']\n")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "python" "setup.py" "config"
+                       "install" "--use_lapack"
+                       (string-append "--prefix=" out))))))
+       #:tests? #f))   ; no test target
+    (inputs
+     `(("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (properties '((release-date "2006-08-26")))
+    (home-page "https://sourceforge.net/projects/numpy/files/Old%20Numarray/1.5.2/")
+    (synopsis "Final numarray release from 2006-08-26")
+    (description "Numarray and Numeric were the predecessors of NumPy.
+Numarray was created as an alternative to Numeric because the latter
+was cumbersome to use when efficiency for large array operations was a
+priority.  Howver, numarray was less efficient for small arrays, and
+thus could not replace Numeric.  Many packages of the early SciPy
+ecosystem supported both Numeric and numarray, with the choice made
+at build time.")
+    (license license:bsd-3)))
