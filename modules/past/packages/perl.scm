@@ -37,7 +37,7 @@
                         "past/patches/perl-5.14-no-sys-dirs.patch"
                         "past/patches/perl-5.14-autosplit-default-time.patch"
                         "past/patches/perl-5.14-module-pluggable-search.patch"))))
-    (properties `((release-date . "2011-05-14")))
+    (properties `((release-date . "2013-03-10")))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
