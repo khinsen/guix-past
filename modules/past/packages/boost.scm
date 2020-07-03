@@ -38,6 +38,7 @@
               (sha256
                (base32
                 "1rfkqxns60171q62cppiyzj8pmsbwp1l8jd7p6crriryqd7j1z7x"))))
+    (properties `((release-date . "2015-04-17")))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; TODO
