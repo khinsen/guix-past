@@ -116,6 +116,47 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
 started with 2.4.0, released on 2004-11-30.  Python 2.5 was
 released on 2006-09-19.")))
 
+
+
+(define-public python24-nose
+  (package
+    (name "python24-nose")
+    (version "0.10.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/nose-devs/nose")
+              (commit (string-append "tag/" version "-release"))))
+       (file-name (git-file-name "nose" version))
+       (sha256
+        (base32
+         "1ajx6m14wav0xq1cba35sqv9b6fv521difkgighxr4mfpkl2vybp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-man-directory
+           (lambda _
+             (substitute* "setup.py"
+               (("man/man1") "share/man/man1"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             ;; This test fails, funtional_tests/support/empty isn't created.
+             (delete-file "functional_tests/test_success.py")
+             (when tests?
+               (invoke "python" "selftest.py"))
+             #t)))))
+    (home-page "http://readthedocs.org/docs/nose/")
+    (properties '((release-date "2008-10-03")))
+    (synopsis "Nose 0.10.4, released 2008-10-03")
+    (description
+     "Nose extends the unittest library to make testing easier.")
+    (license license:lgpl2.0+)))
+
 (define-public python24-numarray
   (package
     (name "python24-numarray")
