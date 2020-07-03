@@ -287,3 +287,22 @@ capabilities.")
          "04dkq22yyl8ap4b5mmgalnp9wrs5pdi5j9wwkv2pabnljfrwikiy"))))
     (properties '((release-date "2008-07-31")))
     (synopsis "NumPy 1.1.1, released on 2008-07-31")))
+
+(define-public python24-numpy-1.2
+  (package
+    (inherit python24-numpy-1.1)
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/numpy/numpy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name "numpy" version))
+       (sha256
+        (base32
+         "14p9qnmqx7mw4vgdz2p5jsghf3dj8i4ln8fhc8l4dc9sxyhqq739"))))
+    (native-inputs
+     `(("nose" ,python24-nose)))
+    (properties '((release-date "2008-10-28")))
+    (synopsis "NumPy 1.2.1, released on 2008-10-28")))
