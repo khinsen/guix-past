@@ -11,7 +11,7 @@ before_script:
 lint:
   stage: lint
   script:
-    - guix lint $PAST_PACKAGES
+    - guix time-machine -- lint $PAST_PACKAGES
 
 build_1_1_0:
   stage: build
