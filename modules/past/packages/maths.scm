@@ -36,21 +36,8 @@
                (base32
                 "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; XXX: Both of these tests fail like this:
-         ;; gsl: fprintf_source.c:164: ERROR: fscanf failed
-         ;; Default GSL error handler invoked.
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             (substitute* "vector/Makefile.in"
-               (("^(check_PROGRAMS = test\\$\\(EXEEXT\\)).*$" _ m)
-                (string-append m "\n")))
-             (substitute* "matrix/Makefile.in"
-               (("^check_PROGRAMS = .*$")
-                "check_PROGRAMS = test_static$(EXEEXT)\n"))
-             #t)))))
+    ;; With parallel testing fscan fails.
+    (arguments '(#:parallel-tests? #f))
     (native-inputs
      `(("pkg-config" ,(S "pkg-config"))))
     (home-page "https://www.gnu.org/software/gsl/")
