@@ -19,6 +19,7 @@
 
 (define-module (past packages python)
   #:use-module (guix)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages maths)
@@ -172,4 +173,58 @@ priority.  Howver, numarray was less efficient for small arrays, and
 thus could not replace Numeric.  Many packages of the early SciPy
 ecosystem supported both Numeric and numarray, with the choice made
 at build time.")
+    (license license:bsd-3)))
+
+(define-public python24-numpy
+  (package
+    (name "python24-numpy")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/numpy/numpy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04dkq22yyl8ap4b5mmgalnp9wrs5pdi5j9wwkv2pabnljfrwikiy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lapack (assoc-ref inputs "lapack"))
+                   (openblas (assoc-ref inputs "openblas")))
+               (with-output-to-file "site.cfg"
+                 (lambda _
+                   (format #t "[DEFAULT]
+library_dirs = ~a/lib:~a/lib
+include:dirs = ~a/include:~a/include~%"
+lapack openblas lapack openblas))))
+               #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (begin
+                 ;; Taken from test.sh
+                 (with-directory-excursion "/tmp"
+                   (add-installed-pythonpath inputs outputs)
+                   (invoke "python" "-c"
+                           "import numpy; print numpy; numpy.test(level = 9999); numpy.show_config()"))))
+             #t)))))
+    (home-page "https://numpy.org")
+    (synopsis "NumPy 1.1.1, released on 2008-07-31")
+    (description "NumPy is the fundamental package for scientific computing
+with Python.  It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.")
+    (properties '((release-date "2008-07-31")))
     (license license:bsd-3)))
