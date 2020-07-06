@@ -1,0 +1,22 @@
+This patch makes Python2.4 print out "linux" for kernel versions >= 4.
+
+Patch by Bonface Munyoki <bonfacemunyoki@gmail.com>
+*** Python-2.4.6/Python/getplatform.c.orig	2020-07-07 21:26:40.500141410 +0300
+--- Python-2.4.6/Python/getplatform.c	2020-07-07 22:34:49.192864557 +0300
+***************
+*** 2,3 ****
+--- 2,4 ----
+  #include "Python.h"
++ #include <regex.h>
+  
+*************** Py_GetPlatform(void)
+*** 10,11 ****
+--- 11,18 ----
+  {
++   regex_t regex;
++   regcomp(&regex, "linux[4-9]", 0);
++   if(regexec(&regex, PLATFORM, 0, NULL, 0) == 0)
++     {
++       return "linux";
++     }
+    return PLATFORM;

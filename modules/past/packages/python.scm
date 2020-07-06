@@ -22,6 +22,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages python)
@@ -39,6 +40,9 @@
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.bz2"))
+      (patches
+       (search-patches
+        "past/patches/python24-get-platform.patch"))
       (sha256
        (base32
         "021y88a4ki07dgq19yhg6zfvmncfiz7h5b2255438i9zmlwl246s"))))
