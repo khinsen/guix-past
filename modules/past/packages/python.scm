@@ -25,6 +25,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (srfi srfi-1))
@@ -306,3 +307,21 @@ capabilities.")
      `(("nose" ,python24-nose)))
     (properties '((release-date "2008-10-28")))
     (synopsis "NumPy 1.2.1, released on 2008-10-28")))
+
+(define-public python24-setuptools
+  (package
+    (inherit python-setuptools)
+    (name "python24-setuptools")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools" version))
+       (sha256
+        (base32
+         "1gfvalhvzcskwj85r3lh9sx190f8k807vz5zln8agaw31ak8cf96"))))
+    (arguments
+     `(#:python ,python-2.4
+       #:tests? #f))    ; Tests want SVN and internet access.
+    (properties '((release-date "2013-12-01")))
+    (synopsis "Setuptools 1.4.2, released on 2013-13-01")))
