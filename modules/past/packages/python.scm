@@ -23,8 +23,11 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tcl)
@@ -329,3 +332,32 @@ capabilities.")
        #:tests? #f))    ; Tests want SVN and internet access.
     (properties '((release-date "2013-12-01")))
     (synopsis "Setuptools 1.4.2, released on 2013-13-01")))
+
+(define-public python24-matplotlib
+  (package
+    (name "python24-matplotlib")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matplotlib" version))
+       (sha256
+        (base32
+         "1whjqg1dhlsah0sfaf3nfs0a8d2m4sk6h0g3xd356i6903sfh932"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("setuptools" ,python24-setuptools)))
+    (propagated-inputs
+     `(("numpy" ,python24-numpy-1.1)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)))
+    (properties '((release-date "2011-11-14")))
+    (home-page "https://matplotlib.org/")
+    (synopsis "Matplotlib 1.1.0 released on 2011-11-14")
+    (description "Matplotlib is a comprehensive library for creating static,
+animated, and interactive visualizations in Python.")
+    (license license:psfl)))
