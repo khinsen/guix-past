@@ -427,6 +427,44 @@ animated, and interactive visualizations in Python.")
 I/O, code introspection, and logging.")
     (license license:expat)))
 
+(define-public python24-pytest
+  (package
+    (name "python24-pytest")
+    (version "2.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest" version))
+        (sha256
+         (base32
+          "1q00r8jwvrdpx0fhjsbp6g61qxfbmdxc4n5rzf0m7sdi6babxjxw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+               (when tests?
+                 ;; Taken from tox.ini
+                 (with-directory-excursion "testing"
+                   (invoke "python" "-m" "pytest" "--lsof" "-rfsxX")))
+               #t)))))
+    (propagated-inputs
+     `(("argparse" ,python24-argparse)  ; python < 2.7
+       ("py" ,python24-py)))
+    (native-inputs
+     `(("setuptools" ,python24-setuptools)))
+    (home-page "https://docs.pytest.org/en/stable/")
+    (properties '((release-date "2013-10-04")))
+    (synopsis "Py.test 2.4.2, released 2013-10-04")
+    (description "Pytest is a testing tool that provides auto-discovery of test
+modules and functions, detailed info on failing assert statements, modular
+fixtures, and many external plugins.")
+    (license license:expat)))
+
 (define-public python24-pytz
   (package
     (inherit python-pytz)
