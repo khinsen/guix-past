@@ -31,6 +31,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (srfi srfi-1))
 
@@ -343,7 +344,12 @@ capabilities.")
        (uri (pypi-uri "matplotlib" version))
        (sha256
         (base32
-         "1whjqg1dhlsah0sfaf3nfs0a8d2m4sk6h0g3xd356i6903sfh932"))))
+         "1whjqg1dhlsah0sfaf3nfs0a8d2m4sk6h0g3xd356i6903sfh932"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "lib/pytz")
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2.4))
@@ -351,7 +357,8 @@ capabilities.")
      `(("pkg-config" ,pkg-config)
        ("setuptools" ,python24-setuptools)))
     (propagated-inputs
-     `(("numpy" ,python24-numpy-1.1)))
+     `(("numpy" ,python24-numpy-1.1)
+       ("pytz" ,python24-pytz)))
     (inputs
      `(("freetype" ,freetype)
        ("libpng" ,libpng)))
@@ -361,3 +368,12 @@ capabilities.")
     (description "Matplotlib is a comprehensive library for creating static,
 animated, and interactive visualizations in Python.")
     (license license:psfl)))
+
+(define-public python24-pytz
+  (package
+    (inherit python-pytz)
+    (name "python24-pytz")
+    (arguments
+     `(#:python ,python-2.4))
+    (native-inputs
+     `(("setuptools" ,python24-setuptools)))))
