@@ -402,6 +402,31 @@ capabilities.")
 animated, and interactive visualizations in Python.")
     (license license:psfl)))
 
+(define-public python24-py
+  (package
+    (name "python24-py")
+    (version "1.4.31")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "py" version))
+        (sha256
+         (base32
+          "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:tests? #f))    ; Tests rely on pytest
+    (native-inputs
+     `(("setuptools" ,python24-setuptools)))
+    (home-page "https://py.readthedocs.io/en/latest/")
+    (properties '((release-date "2015-11-27")))
+    (synopsis "Py 1.4.31, released 2015-11-27")
+    (description
+     "Py is a Python library for file name parsing, @code{.ini} file parsing,
+I/O, code introspection, and logging.")
+    (license license:expat)))
+
 (define-public python24-pytz
   (package
     (inherit python-pytz)
