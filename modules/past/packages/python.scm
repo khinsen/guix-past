@@ -473,3 +473,39 @@ fixtures, and many external plugins.")
      `(#:python ,python-2.4))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))))
+
+(define-public python24-six
+  (package
+    (name "python24-six")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "six" version))
+        (sha256
+         (base32
+          "0rw3bymdjs1fvs8myjqx4rqhxpn4mklprjqs8705qxgvvzbayigh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (when tests?
+               ;; Taken from tox.ini
+               (invoke "py.test" "-rfsxX")
+             #t))))))
+    (home-page "https://pypi.org/project/six/")
+    (native-inputs
+     `(("pytest" ,python24-pytest)
+       ("setuptools" ,python24-setuptools)))
+    (properties '((release-date "2013-09-02")))
+    (synopsis "Six 1.4.1, released 2013-09-02")
+    (description
+     "Six is a Python 2 and 3 compatibility library.  It provides utility
+functions for smoothing over the differences between the Python versions with
+the goal of writing Python code that is compatible on both Python versions.")
+    (license license:expat)))
