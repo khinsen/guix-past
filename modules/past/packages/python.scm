@@ -127,6 +127,39 @@ released on 2006-09-19.")))
 
 
 
+(define-public python24-argparse
+  (package
+    (name "python24-argparse")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "argparse" version))
+        (sha256
+         (base32
+          "1r6nznp64j68ih1k537wms7h57nvppq0szmwsaf99n71bfjqkc32"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (when tests?
+               ;; Taken from tox.ini
+               (invoke "python" "test/test_argparse.py"))
+             #t)))))
+    (native-inputs
+     `(("setuptools" ,python24-setuptools)))
+    (home-page "https://github.com/ThomasWaldmann/argparse/")
+    (properties '((release-date "2015-09-12")))
+    (synopsis "Python command-line parsing library")
+    (description
+     "This package is mostly for people who want to have @code{argparse} on
+older Pythons because it was not part of the standard library back then.")
+    (license license:psfl)))
+
 (define-public python24-nose
   (package
     (name "python24-nose")
