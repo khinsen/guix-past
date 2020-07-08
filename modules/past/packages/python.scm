@@ -416,6 +416,7 @@ capabilities.")
        (modules '((guix build utils)))
        (snippet
         '(begin
+           (delete-file-recursively "lib/dateutil")
            (delete-file-recursively "lib/pytz")
            #t))))
     (build-system python-build-system)
@@ -425,7 +426,8 @@ capabilities.")
      `(("pkg-config" ,pkg-config)
        ("setuptools" ,python24-setuptools)))
     (propagated-inputs
-     `(("numpy" ,python24-numpy-1.1)
+     `(("dateutil" ,python24-dateutil)
+       ("numpy" ,python24-numpy-1.1)
        ("pytz" ,python24-pytz)))
     (inputs
      `(("freetype" ,freetype)
