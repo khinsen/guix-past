@@ -160,6 +160,41 @@ released on 2006-09-19.")))
 older Pythons because it was not part of the standard library back then.")
     (license license:psfl)))
 
+(define-public python24-dateutil
+  (package
+    (name "python24-dateutil")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-dateutil" version))
+        (sha256
+         (base32
+          "1vlx0lpsxjxz64pz87csx800cwfqznjyr2y7nk3vhmzhkwzyqi2c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (when tests?
+               ;; Taken from tox.ini
+               (invoke "python" "test.py"))
+             #t)))))
+    (native-inputs
+     `(("setuptools" ,python24-setuptools)))
+    (propagated-inputs
+     `(("six" ,python24-six)))
+    (home-page "https://dateutil.readthedocs.io/en/stable/")
+    (properties '((release-date "2012-03-28")))
+    (synopsis "python-dateutil 2.1, released 2012-03-28")
+    (description "The dateutil module provides powerful extensions to the
+standard datetime module, available in Python 2.3+.")
+    (license license:bsd-3)))
+
 (define-public python24-nose
   (package
     (name "python24-nose")
