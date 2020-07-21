@@ -95,6 +95,19 @@ It makes most sense to add software dating back to before 2019, around
 the time where [time travel became
 possible](https://guix.gnu.org/blog/2018/gnu-guix-and-guixsd-0.15.0-released/).
 
+If you’re a committer, please do this:
+
+```sh
+cat > .git/hooks/pre-push <<EOF
+#!/bin/sh
+exec guix git authenticate 0c119db2ea86a389769f4d2b9c6f5c41c027e336 "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"
+EOF
+chmod +x .git/hooks/pre-push
+```
+
+This will check whether your commits are signed by a key listed in
+`.guix-authorizations` before pushing.
+
 That’s it!  Now you’re welcome to contribute your bits!
 
 # Meta-History
