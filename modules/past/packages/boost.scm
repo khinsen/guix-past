@@ -90,7 +90,7 @@
        ("python" ,(S "python@2"))
        ("tcsh" ,(S "tcsh"))))
     (inputs `(("zlib" ,(S "zlib"))))
-    (home-page "http://boost.org")
+    (home-page "https://boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
     (description
      "A collection of libraries intended to be widely useful, and
