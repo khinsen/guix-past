@@ -47,6 +47,14 @@
       (patches
        (search-patches
         "past/patches/python24-get-platform.patch"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; Link Expat instead of embedding the bundled one.
+          (delete-file-recursively "Modules/expat")
+          (substitute* "Modules/Setup.dist"
+            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+          #t))
       (sha256
        (base32
         "021y88a4ki07dgq19yhg6zfvmncfiz7h5b2255438i9zmlwl246s"))))
