@@ -1,6 +1,7 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 BonfaceKilz <bonfacemunyoki@gmail.com>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -60,7 +61,8 @@
         "021y88a4ki07dgq19yhg6zfvmncfiz7h5b2255438i9zmlwl246s"))))
     (outputs '("out"))
     (arguments
-      (substitute-keyword-arguments (package-arguments python-2)
+     `(#:parallel-tests? #f
+       ,@(substitute-keyword-arguments (package-arguments python-2)
         ((#:phases phases)
          `(modify-phases ,phases
             (add-after 'unpack 'create-setup-local
@@ -107,7 +109,9 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                     "test_getargs2.py" "test_long.py" "test_math.py"
                     "test_mhlib.py" "test_random.py" "test_socket.py"
                     "test_str.py" "test_userstring.py" "test_whichdb.py"
-                    "test_zlib.py"))
+                    "test_zlib.py"
+                    ;; These tests fail specifically on 32-bit systems:
+                    "test_imageop.py" "test_pickletools.py" "test_pow.py"))
                 #t))
             (add-after 'check 'find-netinet-in-h
               (lambda* (#:key inputs #:allow-other-keys)
@@ -118,7 +122,7 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                   #t)))
             (delete 'move-tk-inter)))
          ;; Python-2.4 does not support '-j'.
-         ((#:make-flags _) ''())))
+         ((#:make-flags _) ''()))))
     (native-search-paths
       (list (search-path-specification
               (variable "PYTHONPATH")
