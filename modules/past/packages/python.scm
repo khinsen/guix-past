@@ -88,18 +88,18 @@
                               array arraymodule.c~%"
 read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(version-major+minor (package-version tcl)) gdbm gdbm rpc nsl zlib zlib))))
                   #t))
-              (add-after 'unpack 'patch-rpc-location
-                (lambda _
-                  (substitute* "Modules/nismodule.c"
-                    (("<rpc/") "<tirpc/rpc/"))
-                  (substitute* "setup.py"
-                    (("\\['nsl'") "['nsl', 'tirpc'"))
-                  #t))
-              (add-after 'unpack 'skip-crypt-module
-                (lambda _
-                  (substitute* "setup.py"
-                    ((".*cryptmodule.c.*") "\n"))
-                  #t))
+            (add-after 'unpack 'patch-rpc-location
+              (lambda _
+                (substitute* "Modules/nismodule.c"
+                  (("<rpc/") "<tirpc/rpc/"))
+                (substitute* "setup.py"
+                  (("\\['nsl'") "['nsl', 'tirpc'"))
+                #t))
+            (add-after 'unpack 'skip-crypt-module
+              (lambda _
+                (substitute* "setup.py"
+                  ((".*cryptmodule.c.*") "\n"))
+                #t))
             (add-before 'check 'delete-failing-tests
               (lambda _
                 (for-each
@@ -121,8 +121,8 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                      (string-append glibc "/include/netinet/in.h")))
                   #t)))
             (delete 'move-tk-inter)))
-         ;; Python-2.4 does not support '-j'.
-         ((#:make-flags _) ''()))))
+        ;; Python-2.4 does not support '-j'.
+        ((#:make-flags _) ''()))))
     (native-search-paths
       (list (search-path-specification
               (variable "PYTHONPATH")
