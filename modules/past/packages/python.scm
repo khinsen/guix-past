@@ -80,7 +80,10 @@
                               _tkinter _tkinter.c tkappinit.c -DWITH_APPINIT -L~a/lib -I~a/include -L~a/lib -I~a/include -ltk~a -ltcl~a~@
                               gdbm gdbmmodule.c -I~a/include -L~a/lib -lgdbm~@
                               nis nismodule.c -I~a/include/tirpc -I~a/include -ltirpc -lnsl~@
-                              zlib zlibmodule.c -I~a/include -L~a/lib -lz~%"
+                              zlib zlibmodule.c -I~a/include -L~a/lib -lz~@
+                              *static*~@
+                              cPickle cPickle.c~@
+                              array arraymodule.c~%"
 read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(version-major+minor (package-version tcl)) gdbm gdbm rpc nsl zlib zlib))))
                   #t))
               (add-after 'unpack 'patch-rpc-location
