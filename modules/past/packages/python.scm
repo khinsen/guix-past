@@ -1,7 +1,7 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2020 BonfaceKilz <bonfacemunyoki@gmail.com>
+;;; Copyright © 2020 Bonface Munyoki <bonfacemunyoki@gmail.com>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
