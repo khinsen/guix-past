@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
@@ -105,13 +106,10 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                 (for-each
                   (lambda (file)
                     (delete-file (string-append "Lib/test/" file)))
-                  '("test_anydbm.py" "test_array.py" "test_decimal.py"
-                    "test_getargs2.py" "test_long.py" "test_math.py"
-                    "test_mhlib.py" "test_random.py" "test_socket.py"
-                    "test_str.py" "test_userstring.py" "test_whichdb.py"
-                    "test_zlib.py"
-                    ;; These tests fail specifically on 32-bit systems:
-                    "test_imageop.py" "test_pickletools.py" "test_pow.py"))
+                  '("test_anydbm.py"
+                    "test_socket.py"
+                    "test_whichdb.py"
+                    "test_zlib.py"))
                 #t))
             (add-after 'check 'find-netinet-in-h
               (lambda* (#:key inputs #:allow-other-keys)
@@ -132,6 +130,10 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
        ("libtirpc" ,libtirpc)
        ("openssl" ,openssl-1.0)
        ,@(alist-delete "openssl" (package-inputs python-2))))
+    (native-inputs
+     ;; This fixes some serious math bugs in the compiled program
+     `(("gcc" ,gcc-5)
+       ,@(package-native-inputs python-2)))
     (properties '((release-date "2008-12-19")))
     (home-page "https://www.python.org/downloads/release/python-246/")
     (synopsis "Python 2.4.6, released 2008-12-19")
