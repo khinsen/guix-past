@@ -33,6 +33,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (srfi srfi-1))
@@ -400,6 +401,45 @@ capabilities.")
      `(("nose" ,python24-nose)))
     (properties '((release-date "2008-10-28")))
     (synopsis "NumPy 1.2.1, released on 2008-10-28")))
+
+(define-public python24-pyx
+  (package
+    (name "python24-pyx")
+    (version "0.12.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/pyx-project/pyx")
+               (commit version)))
+        (file-name (git-file-name "PyX" version))
+        (sha256
+         (base32
+          "0jzb21z3ypwbz967cssm9gbb8psl92x6x9qajsbhkvmqa7xa8ibs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; The tests in test/functional cannot find the font files.
+             ;(invoke "make" "-C" "test")
+             (with-directory-excursion "test/unit"
+               (invoke "python" "test.py")))))))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-bin
+                                        texlive-fonts-cm
+                                        texlive-latex-base)))))
+    (properties '((release-date "2012-10-26")))
+    (home-page "https://pyx-project.org/")
+    (synopsis "Create PostScript, PDF, and SVG files")
+    (description "Pyx is a Python package for the generation of PostScript, PDF,
+and SVG files.  It combines an abstraction of the PostScript drawing model with
+a TeX/LaTeX interface.  Complex tasks like 2d and 3d plots in publication-ready
+quality are built out of these primitives.")
+    (license license:gpl2+)))
 
 (define-public python24-setuptools
   (package
