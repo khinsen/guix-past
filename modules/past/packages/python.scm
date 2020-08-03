@@ -24,6 +24,7 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)
@@ -440,6 +441,34 @@ and SVG files.  It combines an abstraction of the PostScript drawing model with
 a TeX/LaTeX interface.  Complex tasks like 2d and 3d plots in publication-ready
 quality are built out of these primitives.")
     (license license:gpl2+)))
+
+(define-public python24-pyxlwriter
+  (package
+    (name "python24-pyxlwriter")
+    (version "0.4a3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/pyxlwriter/pyxlwriter/"
+                            version "/pyXLWriter-" version ".zip"))
+        (sha256
+         (base32
+          "1kfsi6la9y53rwayszgayfmkjfknpp650v69a0hwd1fcfk1df735"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:tests? #f))    ; Tests not included in tarball.
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (properties '((release-date "2004-08-20")))
+    (home-page "https://sourceforge.net/projects/pyxlwriter/")
+    (synopsis "Python library for generating Excel compatible spreadsheets")
+    (description "PyXLWriter is a Python library for generating Excel compatible
+spreadsheets.  It's a port of John McNamara's Perl @code{Spreadsheet::WriteExcel}
+module version 1.01 to Python.  It allows writing of Excel compatible
+spreadsheets without the need for COM objects.")
+    (license license:lgpl2.1+)))
 
 (define-public python24-setuptools
   (package
