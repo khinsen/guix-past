@@ -90,8 +90,7 @@
                                        " -lgdbm -ltirpc -lnsl -lz\"\n"))
                        (("PY_LDFLAGS=.*")
                         (string-append
-                          "PY_LDFLAGS=\"-Wl,-rpath=" python "/lib"
-                          " -Wl,-rpath=" python "/lib/python" py-version "/lib-dynload\"\n"))
+                          "PY_LDFLAGS=\"-Wl,-rpath=" python "/lib\"\n"))
                        (("PY_INCLUDES=.*")
                         (string-append
                           "PY_INCLUDES=-I" python "/include/python" py-version "\n")))
@@ -125,10 +124,14 @@
                    (let* ((out (assoc-ref outputs "out"))
                           (python (assoc-ref inputs "python"))
                           (py-version (python:python-version python)))
-                     ;; httpd needs to be able to find mod_python
+                     ;; httpd needs to be able to find mod_python.
+                     ;; mod_python should have at least Python and its
+                     ;; C extensions in its PYTHONPATH.
                      (wrap-program (string-append out "/bin/httpd")
                        `("PYTHONPATH" ":" prefix
-                         (,(string-append out "/lib/python" py-version "/site-packages"))))
+                         (,(string-append out "/lib/python" py-version "/site-packages")
+                          ,(string-append python "/lib/python" py-version)
+                          ,(string-append python "/lib/python" py-version "/lib-dynload"))))
                      #t))))))))
     (native-inputs
      `(,@(package-native-inputs httpd-2.2)
