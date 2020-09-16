@@ -1,0 +1,12 @@
+diff -u vinci_gamma.old/vinci.h vinci_gamma/vinci.h
+--- vinci_gamma.old/vinci.h	2020-09-16 17:31:16.512294710 +0200
++++ vinci_gamma/vinci.h	2020-09-16 17:37:09.484304753 +0200
+@@ -65,7 +65,7 @@
+ #define QHULL_OPTIONS "d i Q0 Qz"
+    /* location of external programmes with paths and options for qhull                  */
+    
+-#define PIVOTING 1
++#define PIVOTING 0
+ #define MIN_PIVOT 0.01
+    /* for choosing a pivoting strategy whenever this is needed, e.g. for determinant    */
+    /* computation                                                                       */

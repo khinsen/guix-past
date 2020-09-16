@@ -1,0 +1,21 @@
+diff -u vinci_gamma.old/vinci_volume.c vinci_gamma/vinci_volume.c
+--- vinci_gamma.old/vinci_volume.c	2020-09-16 17:31:16.512294710 +0200
++++ vinci_gamma/vinci_volume.c	2020-09-16 17:31:55.952295832 +0200
+@@ -211,7 +211,7 @@
+    rational         volume, *stored_volume;
+    rational         distance, maxdistance = 0;
+    boolean          i_balance = FALSE, store_volume = FALSE, compute_volume = TRUE;
+-   T_Key            **dummy;
++   T_Key            *dummy;
+    
+    *V = 0;
+ 
+@@ -227,7 +227,7 @@
+          {  copy_set (face [d], &(key.vertices.set));
+             key.vertices.d = d;
+          }
+-         tree_out (&tree_volumes, &i_balance, key, &stored_volume, dummy, key_choice);
++         tree_out (&tree_volumes, &i_balance, key, &stored_volume, &dummy, key_choice);
+          if (*stored_volume < -0.5)  /* volume has not yet been computed and is -1 */
+          {
+             if (!G_OutOfMem) /* stored_volume points to a tree element where the volume */

@@ -151,3 +151,22 @@ convex polytope, and vice versa.  It uses one direction as an oracle for
 the other one, so it is meant to work well when other algorithms face
 a difficult direction (and should be avoided for the easy direction).")
     (license license:gpl3+)))
+
+(define-public vinci-0.97.10.12
+  (package
+    (inherit vinci)
+    (version "0.97.10.12") ; use the release date instead of the not very
+                           ; descriptive "gamma"
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://gitlab.inria.fr/enge/revinci/-/raw/"
+                          "master/code/vinci_gamma.tar.bz2"))
+      (sha256
+       (base32
+        "0yd4mv05v86kbybrcr1ignhzv6msq9gx668r7rvc6k44b4r97xg7"))
+      (patches
+       (search-patches "past/patches/vinci-dummy.patch"
+                       "past/patches/vinci-print.patch"
+                       "past/patches/vinci-pivoting.patch"))))
+    (inputs
+     `(("lrslib" ,lrslib-4.0)))))

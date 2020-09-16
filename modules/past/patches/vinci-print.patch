@@ -1,0 +1,12 @@
+diff -u vinci_gamma.old/vinci.c vinci_gamma/vinci.c
+--- vinci_gamma.old/vinci.c	2020-09-16 17:31:16.512294710 +0200
++++ vinci_gamma/vinci.c	2020-09-16 17:35:24.744301773 +0200
+@@ -968,7 +968,7 @@
+                 
+ #endif
+ 
+-            printf ("\n\nTime passed with computation: %8.2f s\n", time_passed (0));
++            printf ("\n\nTime passed with computation: %9.4f s\n", time_passed (0));
+             printf ("_______________________________________________________________________________\n\n");
+ 
+          } 
