@@ -20,6 +20,7 @@
 (define-module (past packages maths)
   #:use-module (guix)
   #:use-module (guix build-system gnu)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages maths))
@@ -79,3 +80,35 @@ Transforms and random numbers.")
                            (install-file program bin))
                          '("buffer" "lrs" "lrs1" "redund" "redund1")))
              #t)))))))
+
+(define-public qhull-3.0
+  (package
+    (inherit qhull)
+    (version "3.0")
+    (source (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/qhull/qhull.git")
+            (commit "v3.0")))
+      (file-name (git-file-name "qhull" version))
+      (sha256
+       (base32
+        "05wm1b8c9lnmq3dvpb4q6g9168v5irvy69qnwiwmvm3faamfhw75"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no check phase
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "src")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (program)
+                           (install-file program bin))
+                         '("qconvex" "qdelaunay" "qhalf" "qhull"
+                           "qvoronoi")))
+               #t)))))))
