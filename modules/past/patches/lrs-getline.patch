@@ -1,0 +1,32 @@
+Avoid a name clash with getline from the C library.
+
+diff -u lrslib-040/buffer.c lrslib-040/buffer.c
+--- lrslib-040/buffer.c	2020-09-11 14:06:05.504948673 +0200
++++ lrslib-040/buffer.c	2020-09-11 14:07:01.532951018 +0200
+@@ -9,7 +9,7 @@
+ char *line;
+ 
+ int maxline;
+-int getline(void);
++int mygetline(void);
+ void notimpl(char s[]);
+ 
+ main(int argc, char *argv[])
+@@ -38,7 +38,7 @@
+ 	bufsize= -1;  /*upper index of buffer size*/
+         count=-1;     /* count lines output "begin" before "end" minus 1*/
+         counton=0;
+-	while ( getline() > 0 )
++	while ( mygetline() > 0 )
+ 	{
+ 		i=0;
+                 if(strncmp(line,"end",3)==0) counton=0;
+@@ -66,7 +66,7 @@
+ }
+ 
+ /* getline from KR P.32 */
+-int getline(void)
++int mygetline(void)
+ {
+ 	int c,i;
+ 	extern int maxline;

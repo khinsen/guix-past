@@ -1,5 +1,6 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages maths))
 
 (define S specification->package)
 
@@ -49,3 +51,31 @@ over 1000 functions in total.  Subject areas covered by the library
 include: differential equations, linear algebra, Fast Fourier
 Transforms and random numbers.")
     (license license:gpl3+)))
+
+(define-public lrslib-4.0
+  (package
+    (inherit lrslib)
+    (version "4.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "http://cgm.cs.mcgill.ca/~avis/C/lrslib/archive/"
+                          "lrslib-040.tar.gz"))
+      (sha256
+       (base32
+        "1bgc46ihmp0yzhy1r74f1w9qk8zd8kr643xym9md8fzqdsa2lwy2"))
+      (patches
+       (search-patches "past/patches/lrs-getline.patch"))))
+    (inputs '())
+    (arguments
+     `(#:tests? #f  ; no check phase
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (program)
+                           (install-file program bin))
+                         '("buffer" "lrs" "lrs1" "redund" "redund1")))
+             #t)))))))
