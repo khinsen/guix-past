@@ -1,0 +1,13 @@
+diff -u pd.old/makefile pd/makefile
+--- pd.old/makefile	2020-09-16 16:03:22.724144656 +0200
++++ pd/makefile	2020-09-16 16:03:53.564145534 +0200
+@@ -3,7 +3,7 @@
+ # http://wwwjn.inf.ethz.ch/ambros/pd_man.html
+ 
+ CC = gcc -Wall
+-CFLAGS = -O -DNDEBUG -DOMIT_TIMES
++CFLAGS = -O -DNDEBUG -DOMIT_TIMES -DB64
+ 
+ pd:
+ 
+Gemeinsame Unterverzeichnisse: pd.old/pdtest und pd/pdtest.

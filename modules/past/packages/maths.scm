@@ -112,3 +112,42 @@ Transforms and random numbers.")
                          '("qconvex" "qdelaunay" "qhalf" "qhull"
                            "qvoronoi")))
                #t)))))))
+
+(define-public primal-dual
+  (package
+    (name "primal-dual")
+    (version "0.97.11.20") ; no version, use the release date
+    (source (origin
+      (method url-fetch/tarbomb)
+      (uri "http://www.cs.unb.ca/~bremner/software/pd/pd.tar.gz")
+      (sha256
+       (base32
+        "04qhgbviv2f7iblhamjxzmapp1hyhalaa2q8a03f9xzc2phd102p"))
+      ;; The makefile is hard-wired to 32 bit architectures; to simplify,
+      ;; we patch it to work only in 64 bit mode, given that this is the
+      ;; only known use in the guix-past channel.
+      ;; Alternatively, one could patch the makefile in a build phase
+      ;; depending on the architecture.
+      (patches
+       (search-patches "past/patches/primal-dual-64bit.patch"))))
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no check phase
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "pd" bin))
+             #t)))))
+    (home-page "http://www.cs.unb.ca/~bremner/pd/")
+    (synopsis "Primal-dual method for vertex and facet enumeration")
+    (description "Primal-dual, or pd in short, implements an algorithm for
+computing the vertex representation from the facet representation of a
+convex polytope, and vice versa.  It uses one direction as an oracle for
+the other one, so it is meant to work well when other algorithms face
+a difficult direction (and should be avoided for the easy direction).")
+    (license license:gpl3+)))
