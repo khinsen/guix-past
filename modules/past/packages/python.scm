@@ -33,10 +33,12 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (past packages statistics)
   #:use-module (srfi srfi-1))
 
 (define-public python-2.4                           ; Dec. 2008
@@ -594,6 +596,36 @@ fixtures, and many external plugins.")
      `(#:python ,python-2.4))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))))
+
+(define-public python24-rpy2
+  (package
+    (inherit python-rpy2)
+    (name "python24-rpy2")
+    (version "2.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rpy2" version))
+        (sha256
+         (base32
+          "0g6vmv4pxc9bwb756z1vfdlzviib84afjmp4l5cw22x8qqvw1s9s"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.4
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "rpy"
+               (invoke "python" "tests_rpy_classic.py")))))))
+    (inputs `())
+    (propagated-inputs
+     `(("python-numpy" ,python24-numpy-1.2)
+       ("r-minimal" ,r-minimal-2)
+       ("r-survival" ,r-2-survival)))
+    (properties '((release-date "2009-11-06")))))
 
 (define-public python24-six
   (package
