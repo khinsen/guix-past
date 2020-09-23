@@ -20,6 +20,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system r)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages texinfo)
   #:use-module (srfi srfi-1))
@@ -123,3 +124,19 @@
         ;; package files.  We build these packages with the r-build-system
         ;; instead.
         `(cons* "--without-recommended-packages" ,flags))))))
+
+(define-public r-2-lattice
+  (package
+    (inherit r-lattice)
+    (name "r-lattice")
+    (version "0.20-31")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "lattice" version))
+        (sha256
+         (base32
+          "1b3m3rg1zd8ssk5jjswk5y93js89vh6939kfajh6i6wphndxigb1"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:r ,r-minimal-2))))
