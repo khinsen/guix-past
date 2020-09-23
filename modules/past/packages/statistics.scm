@@ -140,3 +140,20 @@
     (build-system r-build-system)
     (arguments
      `(#:r ,r-minimal-2))))
+
+(define-public r-2-matrix
+  (package
+    (inherit r-matrix)
+    (name "r-matrix")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Matrix" version))
+       (sha256
+        (base32
+         "0ywz213p6cpwnklxd81hzdyxjzagaj6cn32ycc5rcnhxy30d7kk5"))))
+    (arguments
+     `(#:r ,r-minimal-2))
+    (propagated-inputs
+     `(("r-lattice" ,r-2-lattice)))))
