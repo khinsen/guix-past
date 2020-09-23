@@ -109,3 +109,17 @@
      `(("texinfo" ,texinfo-4)
        ,@(alist-delete "texinfo" (package-native-inputs r-minimal))))
     (properties '((release-date "2013-03-01")))))
+
+(define-public r-minimal-2
+  (package
+    (inherit r-with-tests-2)
+    (name "r-minimal")
+    (arguments
+     (substitute-keyword-arguments (package-arguments r-with-tests-2)
+       ((#:tests? _ #f) #f)
+       ((#:configure-flags flags)
+        ;; Do not build the recommended packages.  The build system creates
+        ;; random temporary directories and embeds their names in some
+        ;; package files.  We build these packages with the r-build-system
+        ;; instead.
+        `(cons* "--without-recommended-packages" ,flags))))))
