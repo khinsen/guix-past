@@ -157,3 +157,20 @@
      `(#:r ,r-minimal-2))
     (propagated-inputs
      `(("r-lattice" ,r-2-lattice)))))
+
+(define-public r-2-survival
+  (package
+    (inherit r-survival)
+    (name "r-survival")
+    (version "2.41-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survival" version))
+       (sha256
+        (base32
+         "07cnr0hnki6ybbjll54l4s5lllhk19vni5f8m0mvsfp99ls7qygk"))))
+    (arguments
+     `(#:r ,r-minimal-2))
+    (propagated-inputs
+     `(("r-matrix" ,r-2-matrix)))))
