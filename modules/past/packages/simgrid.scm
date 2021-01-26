@@ -1,5 +1,5 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -17,8 +17,8 @@
 ;;; along with Guix Past.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (past packages simgrid)
-  #:use-module (gnu)
   #:use-module (guix)
+  #:use-module (gnu packages)
   #:use-module (guix svn-download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
