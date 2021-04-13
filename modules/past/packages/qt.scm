@@ -23,6 +23,7 @@
 
 (define-module (past packages qt)
   #:use-module (gnu)
+  #:use-module ((srfi srfi-1) #:prefix srfi-1:)
   #:use-module (guix)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
@@ -243,4 +244,4 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
     ;; see <http://hydra.gnu.org/build/112828>.
     ;; Qt 5: assembler error; see <http://hydra.gnu.org/build/112526>.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (supported-systems (srfi-1:delete "mips64el-linux" %supported-systems))))
