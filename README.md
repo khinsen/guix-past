@@ -1,6 +1,6 @@
 Guix-Past: Bringing software from the past to the present
 =================================================================
-[![pipeline status](https://guix.bordeaux.inria.fr/jobset/guix-past/badge.svg)](https://gitlab.inria.fr/guix-hpc/guix-past/commits/master) [![SWH](https://archive.softwareheritage.org/badge/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)](https://archive.softwareheritage.org/browse/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)
+[![pipeline status](https://guix.bordeaux.inria.fr/jobset/guix-past/badge.svg)](https://guix.bordeaux.inria.fr/jobset/guix-past) [![SWH](https://archive.softwareheritage.org/badge/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)](https://archive.softwareheritage.org/browse/origin/https://gitlab.inria.fr/guix-hpc/guix-past.git)
 
 So you want to reproduce the software environment that you used ten
 years ago, say, as the basis of the conclusions of a scientific paper?
