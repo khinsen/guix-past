@@ -111,7 +111,7 @@
     (native-inputs
      `(("texinfo" ,texinfo-4)
        ,@(alist-delete "texinfo" (package-native-inputs r-minimal))))
-    (properties '((release-date "2013-03-01")))))
+    (properties '((release-date . "2013-03-01")))))
 
 (define-public r-minimal-2
   (package

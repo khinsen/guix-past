@@ -137,7 +137,7 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
      ;; This fixes some serious math bugs in the compiled program
      `(("gcc" ,gcc-5)
        ,@(package-native-inputs python-2)))
-    (properties '((release-date "2008-12-19")))
+    (properties '((release-date . "2008-12-19")))
     (home-page "https://www.python.org/downloads/release/python-246/")
     (synopsis "Python 2.4.6, released 2008-12-19")
     (description
@@ -173,7 +173,7 @@ released on 2006-09-19.")))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
     (home-page "https://github.com/ThomasWaldmann/argparse/")
-    (properties '((release-date "2015-09-12")))
+    (properties '((release-date . "2015-09-12")))
     (synopsis "Python command-line parsing library")
     (description
      "This package is mostly for people who want to have @code{argparse} on
@@ -209,7 +209,7 @@ older Pythons because it was not part of the standard library back then.")
     (propagated-inputs
      `(("six" ,python24-six)))
     (home-page "https://dateutil.readthedocs.io/en/stable/")
-    (properties '((release-date "2012-03-28")))
+    (properties '((release-date . "2012-03-28")))
     (synopsis "python-dateutil 2.1, released 2012-03-28")
     (description "The dateutil module provides powerful extensions to the
 standard datetime module, available in Python 2.3+.")
@@ -248,7 +248,7 @@ standard datetime module, available in Python 2.3+.")
                (invoke "python" "selftest.py"))
              #t)))))
     (home-page "http://readthedocs.org/docs/nose/")
-    (properties '((release-date "2008-10-03")))
+    (properties '((release-date . "2008-10-03")))
     (synopsis "Nose 0.10.4, released 2008-10-03")
     (description
      "Nose extends the unittest library to make testing easier.")
@@ -301,7 +301,7 @@ standard datetime module, available in Python 2.3+.")
     (inputs
      `(("lapack" ,lapack)
        ("openblas" ,openblas)))
-    (properties '((release-date "2006-08-26")))
+    (properties '((release-date . "2006-08-26")))
     (home-page "https://sourceforge.net/projects/numpy/files/Old%20Numarray/1.5.2/")
     (synopsis "Final numarray release from 2006-08-26")
     (description "Numarray and Numeric were the predecessors of NumPy.
@@ -357,7 +357,7 @@ lapack openblas lapack openblas))))
                    (invoke "python" "-c"
                            "import numpy; print numpy; numpy.test(level = 9999); numpy.show_config()"))))
              #t)))))
-    (properties '((release-date "2007-11-08")))
+    (properties '((release-date . "2007-11-08")))
     (synopsis "NumPy 1.0.4, released on 2007-11-08")
     (home-page "https://numpy.org")
     (description "NumPy is the fundamental package for scientific computing
@@ -382,7 +382,7 @@ capabilities.")
        (sha256
         (base32
          "04dkq22yyl8ap4b5mmgalnp9wrs5pdi5j9wwkv2pabnljfrwikiy"))))
-    (properties '((release-date "2008-07-31")))
+    (properties '((release-date . "2008-07-31")))
     (synopsis "NumPy 1.1.1, released on 2008-07-31")))
 
 (define-public python24-numpy-1.2
@@ -401,7 +401,7 @@ capabilities.")
          "14p9qnmqx7mw4vgdz2p5jsghf3dj8i4ln8fhc8l4dc9sxyhqq739"))))
     (native-inputs
      `(("nose" ,python24-nose)))
-    (properties '((release-date "2008-10-28")))
+    (properties '((release-date . "2008-10-28")))
     (synopsis "NumPy 1.2.1, released on 2008-10-28")))
 
 (define-public python24-pyx
@@ -434,7 +434,7 @@ capabilities.")
      `(("texlive" ,(texlive-union (list texlive-bin
                                         texlive-fonts-cm
                                         texlive-latex-base)))))
-    (properties '((release-date "2012-10-26")))
+    (properties '((release-date . "2012-10-26")))
     (home-page "https://pyx-project.org/")
     (synopsis "Create PostScript, PDF, and SVG files")
     (description "Pyx is a Python package for the generation of PostScript, PDF,
@@ -462,7 +462,7 @@ quality are built out of these primitives.")
        #:tests? #f))    ; Tests not included in tarball.
     (native-inputs
      `(("unzip" ,unzip)))
-    (properties '((release-date "2004-08-20")))
+    (properties '((release-date . "2004-08-20")))
     (home-page "https://sourceforge.net/projects/pyxlwriter/")
     (synopsis "Python library for generating Excel compatible spreadsheets")
     (description "PyXLWriter is a Python library for generating Excel compatible
@@ -486,7 +486,7 @@ spreadsheets without the need for COM objects.")
     (arguments
      `(#:python ,python-2.4
        #:tests? #f))    ; Tests want SVN and internet access.
-    (properties '((release-date "2013-12-01")))
+    (properties '((release-date . "2013-12-01")))
     (synopsis "Setuptools 1.4.2, released on 2013-13-01")))
 
 (define-public python24-matplotlib
@@ -519,7 +519,7 @@ spreadsheets without the need for COM objects.")
     (inputs
      `(("freetype" ,freetype)
        ("libpng" ,libpng)))
-    (properties '((release-date "2011-11-14")))
+    (properties '((release-date . "2011-11-14")))
     (home-page "https://matplotlib.org/")
     (synopsis "Matplotlib 1.1.0 released on 2011-11-14")
     (description "Matplotlib is a comprehensive library for creating static,
@@ -544,7 +544,7 @@ animated, and interactive visualizations in Python.")
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
     (home-page "https://py.readthedocs.io/en/latest/")
-    (properties '((release-date "2015-11-27")))
+    (properties '((release-date . "2015-11-27")))
     (synopsis "Py 1.4.31, released 2015-11-27")
     (description
      "Py is a Python library for file name parsing, @code{.ini} file parsing,
@@ -582,7 +582,7 @@ I/O, code introspection, and logging.")
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
     (home-page "https://docs.pytest.org/en/stable/")
-    (properties '((release-date "2013-10-04")))
+    (properties '((release-date . "2013-10-04")))
     (synopsis "Py.test 2.4.2, released 2013-10-04")
     (description "Pytest is a testing tool that provides auto-discovery of test
 modules and functions, detailed info on failing assert statements, modular
@@ -626,7 +626,7 @@ fixtures, and many external plugins.")
      `(("python-numpy" ,python24-numpy-1.2)
        ("r-minimal" ,r-minimal-2)
        ("r-survival" ,r-2-survival)))
-    (properties '((release-date "2009-11-06")))))
+    (properties '((release-date . "2009-11-06")))))
 
 (define-public python24-six
   (package
@@ -656,7 +656,7 @@ fixtures, and many external plugins.")
     (native-inputs
      `(("pytest" ,python24-pytest)
        ("setuptools" ,python24-setuptools)))
-    (properties '((release-date "2013-09-02")))
+    (properties '((release-date . "2013-09-02")))
     (synopsis "Six 1.4.1, released 2013-09-02")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility

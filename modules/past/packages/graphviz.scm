@@ -60,5 +60,5 @@
        ("freeglut" ,freeglut)
        ,@(fold alist-delete (package-inputs graphviz)
                '("libjpeg-turbo" "guile" "swig"))))
-    (properties '((release-date "2010-02-01")))
+    (properties '((release-date . "2010-02-01")))
     (license license:cpl1.0)))

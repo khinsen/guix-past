@@ -47,7 +47,7 @@
      (substitute-keyword-arguments (package-arguments httpd)
        ((#:configure-flags flags)
         `(cons "--enable-mods-shared=most" ,flags))))
-    (properties '((release-date "2017-07-24")))))
+    (properties '((release-date . "2017-07-24")))))
 
 ;; httpd@2.2 and mod-python@3.3.1, both built with python@2.4, in the same prefix.
 ;; This is the only way to integrate mod-python with httpd.
