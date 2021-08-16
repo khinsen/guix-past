@@ -39,6 +39,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (past packages statistics)
+  #:use-module (past packages tls)
   #:use-module (srfi srfi-1))
 
 (define-public python-2.4                           ; Dec. 2008

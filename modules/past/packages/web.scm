@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (past packages python)
+  #:use-module (past packages tls)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages tcl)
