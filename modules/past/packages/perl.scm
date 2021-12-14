@@ -20,7 +20,8 @@
   #:use-module (guix)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages gcc))
 
 (define-public perl-5.14
   (package
@@ -81,6 +82,8 @@
                            (chmod dso #o755))
                          (find-files lib "\\.so$"))
                #t))))))
+    (native-inputs
+     (list gcc-7))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (files '("lib/perl5/site_perl")))))
