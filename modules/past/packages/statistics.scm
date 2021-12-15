@@ -243,3 +243,15 @@
               (sha256
                (base32
                 "0r0cv2kc3x5z9xycpnxx6fbvv22psw2m342jhpslbxkc8g1307lp"))))))
+
+(define-public r-minimal-3.6.3
+  (package (inherit r-minimal-3.3.1)
+    (version "3.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cran/src/base/R-"
+                                  (version-prefix version 1) "/R-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13xaxwfbzj0bd6rn2n27z0n04lb93mcyq991w4vdbbg8v282jc49"))))))
