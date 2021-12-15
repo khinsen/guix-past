@@ -1,5 +1,6 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages texinfo)
   #:use-module (srfi srfi-1))
@@ -174,3 +176,34 @@
      `(#:r ,r-minimal-2))
     (propagated-inputs
      `(("r-matrix" ,r-2-matrix)))))
+
+
+;; R 3
+(define-public r-minimal-3.3.1
+  (package (inherit r-minimal)
+    (version "3.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cran/src/base/R-"
+                                  (version-prefix version 1) "/R-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qm9znh8akfy9fkzzi6f1vz2w1dd0chsr6qn7kw80lqzhgjrmi9x"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments r-minimal)
+       ((#:make-flags flags ''())
+        `(cons "CFLAGS=-fcommon" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           ;; The test doesn't recognize that zlib 1.2.11 is newer
+           ;; than 1.2.5...
+           (add-after 'unpack 'bypass-zlib-test
+             (lambda _
+               (substitute* "configure"
+                 (("strncmp\\(ZLIB_VERSION.*")
+                  "0);\n"))))))))
+    (inputs
+     (modify-inputs (package-inputs r-minimal)
+       (replace "gfortran" gfortran-7)
+       (replace "gcc" gcc-7)))))
