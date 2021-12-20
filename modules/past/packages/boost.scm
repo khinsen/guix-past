@@ -38,7 +38,8 @@
               (sha256
                (base32
                 "1dyqsr9yb01y0nnjdq9b8q5s2kvhxbayk34832k5cpzn7jy30qbz"))
-              (patches (search-patches "boost-fix-icu-build.patch"))))
+              (patches
+               (search-patches "past/patches/boost-fix-icu-build.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("icu4c" ,(S "icu4c"))
