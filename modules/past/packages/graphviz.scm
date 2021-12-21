@@ -49,11 +49,9 @@
           "18bzyg17ni0lpcd2g5dhan8fjv3vzkjym38jq8vm42did5p9j47l"))))
     (arguments
      `(#:configure-flags '("--enable-swig=no")
-       ,@(substitute-keyword-arguments (package-arguments graphviz)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (delete 'move-docs)  ; one output
-               (delete 'move-guile-bindings))))))
+
+       ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
+       #:tests? #f))
     (inputs
      ;; TODO(?): Add language bindings.
      `(("gdk-pixbuf" ,gdk-pixbuf)
