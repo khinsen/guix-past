@@ -1,5 +1,5 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Bonface Munyoki <bonfacemunyoki@gmail.com>
 ;;;
@@ -60,8 +60,7 @@
           ;; Link Expat instead of embedding the bundled one.
           (delete-file-recursively "Modules/expat")
           (substitute* "Modules/Setup.dist"
-            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
-          #t))
+            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))))
       (sha256
        (base32
         "021y88a4ki07dgq19yhg6zfvmncfiz7h5b2255438i9zmlwl246s"))))
@@ -89,20 +88,17 @@
                               gdbm gdbmmodule.c -I~a/include -L~a/lib -lgdbm~@
                               nis nismodule.c -I~a/include/tirpc -I~a/include -ltirpc -lnsl~@
                               zlib zlibmodule.c -I~a/include -L~a/lib -lz~%"
-read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(version-major+minor (package-version tcl)) gdbm gdbm rpc nsl zlib zlib))))
-                  #t))
+read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(version-major+minor (package-version tcl)) gdbm gdbm rpc nsl zlib zlib))))))
             (add-after 'unpack 'patch-rpc-location
               (lambda _
                 (substitute* "Modules/nismodule.c"
                   (("<rpc/") "<tirpc/rpc/"))
                 (substitute* "setup.py"
-                  (("\\['nsl'") "['nsl', 'tirpc'"))
-                #t))
+                  (("\\['nsl'") "['nsl', 'tirpc'"))))
             (add-after 'unpack 'skip-crypt-module
               (lambda _
                 (substitute* "setup.py"
-                  ((".*cryptmodule.c.*") "\n"))
-                #t))
+                  ((".*cryptmodule.c.*") "\n"))))
             (add-before 'check 'delete-failing-tests
               (lambda _
                 (for-each
@@ -112,16 +108,41 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                     "test_mhlib.py"
                     "test_socket.py"
                     "test_whichdb.py"
-                    "test_zlib.py"))
-                #t))
+                    "test_zlib.py"))))
             (add-after 'check 'find-netinet-in-h
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((glibc (assoc-ref inputs "libc")))
                   (substitute* (find-files "Lib/plat-generic" ".*")
                     (("/usr/include/netinet/in.h")
-                     (string-append glibc "/include/netinet/in.h")))
-                  #t)))
-            (delete 'move-tk-inter)))
+                     (string-append glibc "/include/netinet/in.h"))))))
+            (replace 'remove-tests
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out     (assoc-ref outputs "out"))
+                       (libdir  (string-append out "/lib/python2.4"))
+                       (testdir (string-append libdir "/test")))
+                  (with-directory-excursion testdir
+                    (for-each delete-file-recursively
+                              (scandir testdir
+                                       (match-lambda
+                                         ((or "." "..") #f)
+                                         ("support" #f)
+                                         (file
+                                          (not
+                                           (string-prefix? "test_support."
+                                                           file))))))
+                    (call-with-output-file "__init__.py" (const #t)))
+                  (for-each delete-file-recursively
+                            (find-files libdir "^test(s)?$"
+                                        #:directories? #t)))))
+            (replace 'install-sitecustomize.py
+              ;; TODO: Adjust sitecustomize.py for python-2.4.
+              ;,(customize-site version))
+              (lambda _ #t))
+            ;; Some later phases depend on these phases existing.
+            (replace 'move-tk-inter
+              (lambda _ #t))
+            (replace 'move-idle
+              (lambda _ #t))))
         ;; Python-2.4 does not support '-j'.
         ((#:make-flags _) ''()))))
     (native-search-paths
