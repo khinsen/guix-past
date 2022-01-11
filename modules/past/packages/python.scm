@@ -101,20 +101,18 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
                   ((".*cryptmodule.c.*") "\n"))))
             (add-before 'check 'delete-failing-tests
               (lambda _
-                (for-each
-                  (lambda (file)
-                    (delete-file (string-append "Lib/test/" file)))
-                  '("test_anydbm.py"
-                    "test_mhlib.py"
-                    "test_socket.py"
-                    "test_whichdb.py"
-                    "test_zlib.py"))))
+                (with-directory-excursion "Lib/test/"
+                  (for-each delete-file
+                            '("test_anydbm.py"
+                              "test_mhlib.py"
+                              "test_socket.py"
+                              "test_whichdb.py"
+                              "test_zlib.py")))))
             (add-after 'check 'find-netinet-in-h
               (lambda* (#:key inputs #:allow-other-keys)
-                (let ((glibc (assoc-ref inputs "libc")))
-                  (substitute* (find-files "Lib/plat-generic" ".*")
-                    (("/usr/include/netinet/in.h")
-                     (string-append glibc "/include/netinet/in.h"))))))
+                (substitute* (find-files "Lib/plat-generic")
+                  (("/usr/include/netinet/in.h")
+                   (search-input-file inputs "/include/netinet/in.h")))))
             (replace 'remove-tests
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out     (assoc-ref outputs "out"))
