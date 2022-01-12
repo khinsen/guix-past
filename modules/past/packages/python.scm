@@ -184,11 +184,13 @@ released on 2006-09-19.")))
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
+             (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                 (getenv "PYTHONPATH")))
              (when tests?
                ;; Taken from tox.ini
-               (invoke "python" "test/test_argparse.py"))
-             #t)))))
+               (invoke "python" "test/test_argparse.py"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
     (home-page "https://github.com/ThomasWaldmann/argparse/")
@@ -218,11 +220,13 @@ older Pythons because it was not part of the standard library back then.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
+             (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                 (getenv "PYTHONPATH")))
              (when tests?
                ;; Taken from tox.ini
-               (invoke "python" "test.py"))
-             #t)))))
+               (invoke "python" "test.py"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
     (propagated-inputs
@@ -257,15 +261,15 @@ standard datetime module, available in Python 2.3+.")
          (add-after 'unpack 'patch-man-directory
            (lambda _
              (substitute* "setup.py"
-               (("man/man1") "share/man/man1"))
-             #t))
+               (("man/man1") "share/man/man1"))))
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              ;; This test fails, funtional_tests/support/empty isn't created.
              (delete-file "functional_tests/test_success.py")
              (when tests?
-               (invoke "python" "selftest.py"))
-             #t)))))
+               (invoke "python" "selftest.py"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (home-page "http://readthedocs.org/docs/nose/")
     (properties '((release-date . "2008-10-03")))
     (synopsis "Nose 0.10.4, released 2008-10-03")
@@ -308,14 +312,15 @@ standard datetime module, available in Python 2.3+.")
                                  lapack "/lib', '" blas "/lib']\n"))
                  (("lapack_include_dirs = .*")
                   (string-append "lapack_include_dirs = ['"
-                                 lapack "/include', '" blas "/include']\n")))
-               #t)))
+                                 lapack "/include', '" blas "/include']\n"))))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "python" "setup.py" "config"
                        "install" "--use_lapack"
-                       (string-append "--prefix=" out))))))
+                       (string-append "--prefix=" out)))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))
        #:tests? #f))   ; no test target
     (inputs
      `(("lapack" ,lapack)
@@ -364,18 +369,19 @@ at build time.")
                    (format #t "[DEFAULT]
 library_dirs = ~a/lib:~a/lib
 include:dirs = ~a/include:~a/include~%"
-lapack openblas lapack openblas))))
-               #t))
+lapack openblas lapack openblas))))))
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (begin
                  ;; Taken from test.sh
                  (with-directory-excursion "/tmp"
-                   (add-installed-pythonpath inputs outputs)
+                   (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                       (getenv "PYTHONPATH")))
                    (invoke "python" "-c"
-                           "import numpy; print numpy; numpy.test(level = 9999); numpy.show_config()"))))
-             #t)))))
+                           "import numpy; print numpy; numpy.test(level = 9999); numpy.show_config()"))))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (properties '((release-date . "2007-11-08")))
     (synopsis "NumPy 1.0.4, released on 2007-11-08")
     (home-page "https://numpy.org")
@@ -448,11 +454,13 @@ capabilities.")
              ;; The tests in test/functional cannot find the font files.
              ;(invoke "make" "-C" "test")
              (with-directory-excursion "test/unit"
-               (invoke "python" "test.py")))))))
+               (invoke "python" "test.py"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-bin
-                                        texlive-fonts-cm
-                                        texlive-latex-base)))))
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-bin
+                                             texlive-cm
+                                             texlive-latex-base)))))
     (properties '((release-date . "2012-10-26")))
     (home-page "https://pyx-project.org/")
     (synopsis "Create PostScript, PDF, and SVG files")
@@ -478,6 +486,10 @@ quality are built out of these primitives.")
     (arguments
      `(#:python ,python-2.4
        #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))
        #:tests? #f))    ; Tests not included in tarball.
     (native-inputs
      `(("unzip" ,unzip)))
@@ -504,6 +516,10 @@ spreadsheets without the need for COM objects.")
          "1gfvalhvzcskwj85r3lh9sx190f8k807vz5zln8agaw31ak8cf96"))))
     (arguments
      `(#:python ,python-2.4
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))
        #:tests? #f))    ; Tests want SVN and internet access.
     (properties '((release-date . "2013-12-01")))
     (synopsis "Setuptools 1.4.2, released on 2013-13-01")))
@@ -523,13 +539,17 @@ spreadsheets without the need for COM objects.")
        (snippet
         '(begin
            (delete-file-recursively "lib/dateutil")
-           (delete-file-recursively "lib/pytz")
-           #t))))
+           (delete-file-recursively "lib/pytz")))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2.4))
+     `(#:python ,python-2.4
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gcc" ,gcc-7)
+       ("pkg-config" ,pkg-config)
        ("setuptools" ,python24-setuptools)))
     (propagated-inputs
      `(("dateutil" ,python24-dateutil)
@@ -559,6 +579,10 @@ animated, and interactive visualizations in Python.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2.4
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))
        #:tests? #f))    ; Tests rely on pytest
     (native-inputs
      `(("setuptools" ,python24-setuptools)))
@@ -589,12 +613,14 @@ I/O, code introspection, and logging.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
+             (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                 (getenv "PYTHONPATH")))
                (when tests?
                  ;; Taken from tox.ini
                  (with-directory-excursion "testing"
-                   (invoke "python" "-m" "pytest" "--lsof" "-rfsxX")))
-               #t)))))
+                   (invoke "python" "-m" "pytest" "--lsof" "-rfsxX")))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (propagated-inputs
      `(("argparse" ,python24-argparse)  ; python < 2.7
        ("py" ,python24-py)))
@@ -613,7 +639,11 @@ fixtures, and many external plugins.")
     (inherit python-pytz)
     (name "python24-pytz")
     (arguments
-     `(#:python ,python-2.4))
+     `(#:python ,python-2.4
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (native-inputs
      `(("setuptools" ,python24-setuptools)))))
 
@@ -637,9 +667,12 @@ fixtures, and many external plugins.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
+             (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                 (getenv "PYTHONPATH")))
              (with-directory-excursion "rpy"
-               (invoke "python" "tests_rpy_classic.py")))))))
+               (invoke "python" "tests_rpy_classic.py"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (inputs `())
     (propagated-inputs
      `(("python-numpy" ,python24-numpy-1.2)
@@ -666,11 +699,13 @@ fixtures, and many external plugins.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
+             (setenv "PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                                 (getenv "PYTHONPATH")))
              (when tests?
                ;; Taken from tox.ini
-               (invoke "py.test" "-rfsxX")
-             #t))))))
+               (invoke "py.test" "-rfsxX"))))
+         (delete 'add-install-to-pythonpath)
+         (delete 'sanity-check))))
     (home-page "https://pypi.org/project/six/")
     (native-inputs
      `(("pytest" ,python24-pytest)
