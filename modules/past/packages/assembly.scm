@@ -17,7 +17,8 @@
 ;;; along with Guix Past.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (past packages assembly)
-  #:use-module (guix)
+  #:use-module (guix utils)
+  #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages assembly))

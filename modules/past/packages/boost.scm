@@ -17,7 +17,10 @@
 ;;; along with Guix Past.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (past packages boost)
-  #:use-module (guix)
+  #:use-module (guix gexp)
+  #:use-module (guix utils)
+  #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
