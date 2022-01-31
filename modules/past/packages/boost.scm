@@ -49,7 +49,7 @@
        ("zlib" ,(S "zlib"))))
     (native-inputs
      `(("perl" ,(S "perl"))
-       ("python" ,(S "python@2"))
+       ("python" ,(S "python2@2.7"))
        ("tcsh" ,(S "tcsh"))))
     (arguments
      `(#:tests? #f
@@ -168,7 +168,7 @@ across a broad spectrum of applications.")
              (apply invoke "./b2" "install" make-flags))))))
     (native-inputs
      `(("perl" ,(S "perl"))
-       ("python" ,(S "python@2"))
+       ("python" ,(S "python2@2.7"))
        ("tcsh" ,(S "tcsh"))))
     (inputs `(("zlib" ,(S "zlib"))))
     (home-page "https://boost.org")
