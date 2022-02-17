@@ -74,6 +74,12 @@ Transforms and random numbers.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'set-c-flags
+           (lambda _
+             ;; Allow compilation with GCC 10+.
+             (substitute* "makefile"
+               (("-O3")
+                "-O3 -g -fcommon"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
