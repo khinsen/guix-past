@@ -1,5 +1,5 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
-;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -40,7 +40,10 @@
     (build-system gnu-build-system)
     (arguments
      ;; XXX: There are test failures of various kinds.
-     '(#:tests? #f))
+     '(#:tests? #f
+
+       ;; Work around compilation error when using GCC 10+.
+       #:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (home-page "https://simgrid.org")
     (synopsis "Distributed system simulator (2009 version)")
     (description
