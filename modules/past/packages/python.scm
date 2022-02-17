@@ -460,9 +460,12 @@ capabilities.")
          (delete 'add-install-to-pythonpath)
          (delete 'sanity-check))))
     (native-inputs
-     `(("texlive" ,(texlive-updmap.cfg (list texlive-bin
-                                             texlive-cm
-                                             texlive-latex-base)))))
+     ;; Note: since Dec. 2021, 'texlive-union' is deprecated in favor of
+     ;; 'texlive-updmap.cfg'.  Keep using it for now so that Guix-Past can be
+     ;; used together with older Guix revisions.
+     `(("texlive" ,(texlive-union (list texlive-bin
+                                        texlive-cm
+                                        texlive-latex-base)))))
     (properties '((release-date . "2012-10-26")))
     (home-page "https://pyx-project.org/")
     (synopsis "Create PostScript, PDF, and SVG files")
