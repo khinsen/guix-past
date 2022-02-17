@@ -62,6 +62,11 @@ MPI applications.")
 (define gtnets-source
   ;; This Subversion checkout contains a zip file, the GTNetS source, along
   ;; with a tarball containing patches.
+  ;;
+  ;; However, gforge.inria.fr was shut down in Dec. 2021.  Thus, instead,
+  ;; arrange to fetch the individual files from Software Heritage (see
+  ;; below).  SWH also has a copy of the whole checkout at
+  ;; <https://archive.softwareheritage.org/browse/origin/directory/?origin_url=svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/GTNetS>.
   (origin
     (method svn-fetch)
     (uri (svn-reference
@@ -75,29 +80,24 @@ MPI applications.")
 (define gtnets-zipball
   ;; The zip file containing the original gtnets source.  Here we make it
   ;; content-addressed (with #:hash) so it can be downloaded from Software
-  ;; Heritage as a fallback.
-  (computed-file "gtnets-current.zip"
-                 #~(copy-file #+(file-append gtnets-source
-                                             "/gtnets-current.zip")
-                              #$output)
-                 #:options
-                 (list #:hash-algo 'sha256
-                       #:hash
-                       (base32
-                        "1l06aalr925xnzxrlz3f3gc40hs6ac9w0z21vqyr9fljs71301h8"))))
+  ;; Heritage as a fallback.  (This file used to be extracted from
+  ;; GTNETS-SOURCE above.)
+  (origin
+    (method url-fetch)
+    (uri "http://example.org/placeholder")        ;force fallback to SWH
+    (file-name "gtnets-current.zip")
+    (sha256
+     (base32 "1l06aalr925xnzxrlz3f3gc40hs6ac9w0z21vqyr9fljs71301h8"))))
 
 
 (define gtnets-patch-tarball
   ;; Tarball containing patches.
-  (computed-file "gtnets-current-patch.tgz"
-                 #~(copy-file #+(file-append gtnets-source
-                                             "/gtnets-current-patch.tgz")
-                              #$output)
-                 #:options
-                 (list #:hash-algo 'sha256
-                       #:hash
-                       (base32
-                        "16p8vrzhy1266l4pfyahcw4iccg3b9izdh3qp2fwh33kwkyjkcz3"))))
+  (origin
+    (method url-fetch)
+    (uri "http://example.org/placeholder")        ;force fallback to SWH
+    (file-name "gtnets-current-patch.tgz")
+    (sha256
+     (base32 "16p8vrzhy1266l4pfyahcw4iccg3b9izdh3qp2fwh33kwkyjkcz3"))))
 
 (define-public gtnets
   (package
