@@ -125,7 +125,10 @@
         ;; random temporary directories and embeds their names in some
         ;; package files.  We build these packages with the r-build-system
         ;; instead.
-        `(cons* "--without-recommended-packages" ,flags))))))
+        `(cons* "--without-recommended-packages"
+                "CFLAGS=-O2 -g -fcommon"      ;'-fcommon' needed with GCC 10+
+                "FFLAGS=-O2 -g -fallow-argument-mismatch" ;likewise
+                ,flags))))))
 
 (define-public r-2-lattice
   (package
