@@ -20,26 +20,35 @@
 
 (define-module (past packages python)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module (past packages statistics)
   #:use-module (past packages tls)
   #:use-module (srfi srfi-1))
@@ -165,6 +174,271 @@ read read ssl ssl tcl tcl tk tk ,(version-major+minor (package-version tcl)) ,(v
      "The last bugfix release of the Python 2.4 series, which
 started with 2.4.0, released on 2004-11-30.  Python 2.5 was
 released on 2006-09-19.")))
+
+(define-public python-3.8
+  (package
+    (name "python")
+    (version "3.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.python.org/ftp/python/"
+                                  version "/Python-" version ".tar.xz"))
+              (patches (search-patches
+                        "past/patches/python-3.8-arm-alignment.patch"
+                        "past/patches/python-3.8-fix-tests.patch"
+                        "past/patches/python-3.8-fix-tests2.patch"
+                        "past/patches/python-3.8-deterministic-build-info.patch"
+                        "past/patches/python-3.8-search-paths.patch"
+                        "past/patches/python-3.8-hurd-configure.patch"))
+              (sha256
+               (base32
+                "1c43dbv9lvlp3ynqmgdi4rh8q94swanhqarqrdx62zmigpakw073"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete the bundled copy of libexpat.
+                  (delete-file-recursively "Modules/expat")
+                  (substitute* "Modules/Setup"
+                    ;; Link Expat instead of embedding the bundled one.
+                    (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))))))
+    (outputs '("out"
+               "tk"))                   ;tkinter; adds 50 MiB to the closure
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       (list "--enable-shared"          ;allow embedding
+             "--with-system-expat"      ;for XML support
+             "--with-system-ffi"        ;build ctypes
+             "--with-ensurepip=install" ;install pip and setuptools
+             "--enable-unicode=ucs4"
+
+             ;; Prevent the installed _sysconfigdata.py from retaining a reference
+             ;; to coreutils.
+             "INSTALL=install -c"
+             "MKDIR_P=mkdir -p"
+
+             ;; Disable runtime check failing if cross-compiling, see:
+             ;; https://lists.yoctoproject.org/pipermail/poky/2013-June/008997.html
+             ,@(if (%current-target-system)
+                   '("ac_cv_buggy_getaddrinfo=no"
+                     "ac_cv_file__dev_ptmx=no"
+                     "ac_cv_file__dev_ptc=no")
+                   '())
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       ;; With no -j argument tests use all available cpus, so provide one.
+       #:make-flags
+       (list (string-append
+              (format #f "TESTOPTS=-j~d" (parallel-job-count))
+              ;; test_mmap fails on low-memory systems.
+              " --exclude test_mmap"
+              ;; test_socket may hang and eventually run out of memory
+              ;; on some systems: <https://bugs.python.org/issue34587>.
+              " test_socket"
+              ,@(if (hurd-target?)
+                    '(" test_posix"     ;multiple errors
+                      " test_time"
+                      " test_pty"
+                      " test_shutil"
+                      " test_tempfile"  ;chflags: invalid argument:
+                                        ;  tbv14c9t/dir0/dir0/dir0/test0.txt
+                      " test_asyncio"   ;runs over 10min
+                      " test_os"        ;stty: 'standard input':
+                                        ;  Inappropriate ioctl for device
+                      " test_openpty"   ;No such file or directory
+                      " test_selectors" ;assertEqual(NUM_FDS // 2, len(fds))
+                                        ;  32752 != 4
+                      " test_compileall" ;multiple errors
+                      " test_poll"       ;list index out of range
+                      " test_subprocess" ;runs over 10min
+                      " test_asyncore"   ;multiple errors
+                      " test_threadsignals"
+                      " test_eintr"     ;Process return code is -14
+                      " test_io"        ;multiple errors
+                      " test_logging"
+                      " test_signal"
+                      " test_threading" ;runs over 10min
+                      " test_flags"     ;ERROR
+                      " test_bidirectional_pty"
+                      " test_create_unix_connection"
+                      " test_unix_sock_client_ops"
+                      " test_open_unix_connection"
+                      " test_open_unix_connection_error"
+                      " test_read_pty_output"
+                      " test_write_pty")
+                    '())))
+
+       #:modules ((ice-9 ftw) (ice-9 match)
+                  (guix build utils) (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-lib-shells
+           (lambda _
+             ;; This variable is used in setup.py to enable cross compilation
+             ;; specific switches. As it is not set properly by configure
+             ;; script, set it manually.
+             ,@(if (%current-target-system)
+                   '((setenv "_PYTHON_HOST_PLATFORM" ""))
+                   '())
+             ;; Filter for existing files, since some may not exist in all
+             ;; versions of python that are built with this recipe.
+             (substitute* (filter file-exists?
+                                  '("Lib/subprocess.py"
+                                    "Lib/popen2.py"
+                                    "Lib/distutils/tests/test_spawn.py"
+                                    "Lib/test/support/__init__.py"
+                                    "Lib/test/test_subprocess.py"))
+               (("/bin/sh") (which "sh")))))
+         (add-before 'configure 'do-not-record-configure-flags
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             ;; Remove configure flags from the installed '_sysconfigdata.py'
+             ;; and 'Makefile' so we don't end up keeping references to the
+             ;; build tools.
+             ;;
+             ;; Preserve at least '--with-system-ffi' since otherwise the
+             ;; thing tries to build libffi, fails, and we end up with a
+             ;; Python that lacks ctypes.
+             (substitute* "configure"
+               (("^CONFIG_ARGS=.*$")
+                (format #f "CONFIG_ARGS='~a'\n"
+                        (if (member "--with-system-ffi" configure-flags)
+                            "--with-system-ffi"
+                            ""))))))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; 'Lib/test/test_site.py' needs a valid $HOME
+             (setenv "HOME" (getcwd))))
+         (add-after 'unpack 'set-source-file-times-to-1980
+           ;; XXX One of the tests uses a ZIP library to pack up some of the
+           ;; source tree, and fails with "ZIP does not support timestamps
+           ;; before 1980".  Work around this by setting the file times in the
+           ;; source tree to sometime in early 1980.
+           (lambda _
+             (let ((circa-1980 (* 10 366 24 60 60)))
+               (ftw "." (lambda (file stat flag)
+                          (utime file circa-1980 circa-1980)
+                          #t)))))
+         (add-after 'install 'remove-tests
+           ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
+           ;; because these files are used by some libraries out there.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (match (scandir (string-append out "/lib")
+                               (lambda (name)
+                                 (string-prefix? "python" name)))
+                 ((pythonX.Y)
+                  (let ((testdir (string-append out "/lib/" pythonX.Y
+                                                "/test")))
+                    (with-directory-excursion testdir
+                      (for-each delete-file-recursively
+                                (scandir testdir
+                                         (match-lambda
+                                           ((or "." "..") #f)
+                                           ("support" #f)
+                                           (file
+                                            (not
+                                             (string-prefix? "test_support."
+                                                             file))))))
+                      (call-with-output-file "__init__.py" (const #t)))))))))
+         (add-before 'check 'set-TZDIR
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             ;; test_email requires the Olson time zone database.
+             (setenv "TZDIR"
+                     (string-append (assoc-ref
+                                     (or native-inputs inputs) "tzdata")
+                                    "/share/zoneinfo"))))
+         ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
+         ;; again afterwards.  See <https://bugs.python.org/issue34022>.
+         (add-before 'check 'unset-SOURCE_DATE_EPOCH
+           (lambda _ (unsetenv "SOURCE_DATE_EPOCH")))
+         (add-after 'check 'reset-SOURCE_DATE_EPOCH
+           (lambda _ (setenv "SOURCE_DATE_EPOCH" "1")))
+         (add-after 'remove-tests 'rebuild-bytecode
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Disable hash randomization to ensure the generated .pycs
+               ;; are reproducible.
+               (setenv "PYTHONHASHSEED" "0")
+               (for-each
+                (lambda (opt)
+                  (format #t "Compiling with optimization level: ~a\n"
+                          (if (null? opt) "none" (car opt)))
+                  (for-each (lambda (file)
+                              (apply invoke
+                                     `(,,(if (%current-target-system)
+                                             "python3"
+                                             '(string-append out
+                                                             "/bin/python3"))
+                                       ,@opt
+                                       "-m" "compileall"
+                                       "-f" ; force rebuild
+                                       ;; Don't build lib2to3, because it's Python 2 code.
+                                       "-x" "lib2to3/.*"
+                                       ,file)))
+                            (find-files out "\\.py$")))
+                (list '() '("-O") '("-OO"))))))
+         (add-after 'install 'move-tk-inter
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; When Tkinter support is built move it to a separate output so
+             ;; that the main output doesn't contain a reference to Tcl/Tk.
+             (let ((out (assoc-ref outputs "out"))
+                   (tk  (assoc-ref outputs "tk")))
+               (when tk
+                 (match (find-files out "tkinter.*\\.so")
+                   ((tkinter.so)
+                    ;; The .so is in OUT/lib/pythonX.Y/lib-dynload, but we
+                    ;; want it under TK/lib/pythonX.Y/site-packages.
+                    (let* ((len    (string-length out))
+                           (target (string-append
+                                    tk "/"
+                                    (string-drop
+                                     (dirname (dirname tkinter.so))
+                                     len)
+                                    "/site-packages")))
+                      (install-file tkinter.so target)
+                      (delete-file tkinter.so))))))))
+         (add-after 'install 'install-sitecustomize.py
+           ,(customize-site version)))))
+    (inputs
+     (list bzip2
+           expat
+           gdbm
+           libffi                       ; for ctypes
+           sqlite                       ; for sqlite extension
+           openssl
+           readline
+           zlib
+           tcl
+           tk))
+    (native-inputs
+     `(("tzdata" ,tzdata-for-tests)
+       ("pkg-config" ,pkg-config)
+       ("sitecustomize.py" ,(local-file (search-auxiliary-file
+                                         "python/sitecustomize.py")))
+       ;; When cross-compiling, a native version of Python itself is needed.
+       ,@(if (%current-target-system)
+             `(("python3" ,this-package)
+               ("which" ,which))
+             '())))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUIX_PYTHONPATH")
+            (files (list (string-append "lib/python"
+                                        (version-major+minor version)
+                                        "/site-packages"))))))
+    (home-page "https://www.python.org")
+    (synopsis "High-level, dynamically-typed programming language")
+    (description
+     "Python is a remarkably powerful dynamic programming language that
+is used in a wide variety of application domains.  Some of its key
+distinguishing features include: clear, readable syntax; strong
+introspection capabilities; intuitive object orientation; natural
+expression of procedural code; full modularity, supporting hierarchical
+packages; exception-based error handling; and very high level dynamic
+data types.")
+    (properties '((cpe-name . "python")))
+    (license license:psfl)))
 
 
 
