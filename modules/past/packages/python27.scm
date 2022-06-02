@@ -686,6 +686,34 @@ distributed testing in both @code{load} and @code{each} modes.  It also
 supports coverage of subprocesses.")
     (license license:expat)))
 
+;; This is the last version of Hypothesis that supports Python 2.
+(define-python2-package python2-hypothesis
+  (package
+    (name "python2-hypothesis")
+    (version "4.57.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hypothesis" version))
+              (sha256
+               (base32
+                "183gpxbfcdhdqzlahkji5a71n6lmvgqsbkcb0ihqad51n2j6jhrw"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests are not distributed with the PyPI archive.
+     (list #:tests? #f
+           #:python python-2))
+    (propagated-inputs
+     (map S2 (list "python-enum34"
+                   "python-attrs-bootstrap"
+                   "python-sortedcontainers")))
+    (synopsis "Library for property based testing")
+    (description "Hypothesis is a library for testing your Python code against a
+much larger range of examples than you would ever want to write by hand.  It’s
+based on the Haskell library, Quickcheck, and is designed to integrate
+seamlessly into your existing Python unit testing work flow.")
+    (home-page "https://github.com/HypothesisWorks/hypothesis")
+    (license license:mpl2.0)))
+
 (define-python2-package python2-cython
   (package
     (name "python2-cython")
