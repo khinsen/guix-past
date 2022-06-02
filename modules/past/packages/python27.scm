@@ -570,6 +570,26 @@ Pytest but stripped of Pytest specific details.")
     (propagated-inputs
      (list python2-importlib-metadata-bootstrap))))
 
+(define-python2-package python2-enum34
+  (package
+    (name "python2-enum34")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "enum34" version))
+       (sha256
+        (base32
+         "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
+    (build-system python-build-system)
+    (arguments (list #:python python-2))
+    (home-page "https://pypi.org/project/enum34/")
+    (synopsis "Backported Python 3.4 Enum")
+    (description
+     "Enum34 is the new Python stdlib enum module available in Python 3.4
+backported for previous versions of Python from 2.4 to 3.3.")
+    (license license:bsd-3)))
+
 ;; Pytest 4.x are the last versions that support Python 2.
 (define-python2-package python2-pytest
   (package
