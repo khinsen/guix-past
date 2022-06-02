@@ -22,6 +22,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
@@ -952,3 +953,41 @@ a general image processing tool.")
      "This package is a backport of the @code{functools} module from Python
 3.2.3 for use with older versions of Python and PyPy.")
     (license license:expat)))
+
+(define-python2-package python2-pygobject-2
+  (package
+    (name "python2-pygobject")
+    ;; This was the last version to declare the 2.0 platform number, i.e. its
+    ;; pkg-config files were named pygobject-2.0.pc
+    (version "2.28.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/pygobject/"
+                           (version-major+minor version)
+                           "/pygobject-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0nkam61rsn7y3wik3vw46wk5q2cjfh2iph57hl9m39rc8jijb7dv"))
+       (patches (search-patches "past/patches/python2-pygobject-2-deprecation.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;segfaults during tests
+       #:configure-flags '("LIBS=-lcairo-gobject")))
+    (native-inputs
+     (list (S "which")
+           `(,(S "glib") "bin")       ;for tests: glib-compile-schemas
+           (S "pkg-config")
+           (S "dbus"))) ;for tests
+    (inputs
+     (list python-2
+           (S "glib")
+           (S2 "python-pycairo")
+           (S "gobject-introspection")))
+    (propagated-inputs
+     (list (S "libffi")))                     ;mentioned in pygobject-2.0.pc
+    (home-page "https://pypi.org/project/PyGObject/")
+    (synopsis "Python bindings for GObject")
+    (description
+     "Python bindings for GLib, GObject, and GIO.")
+    (license license:lgpl2.1+)))
