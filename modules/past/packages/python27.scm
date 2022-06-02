@@ -1027,3 +1027,31 @@ new features.  On POSIX systems it is guaranteed to be reliable when used
 in threaded applications.  It includes timeout support from Python 3.3 but
 otherwise matches 3.2’s API.")
     (license license:psfl)))
+
+;; Pycairo no longer supports Python 2 since version 1.19.0, so we stick
+;; with this older version here.
+(define-python2-package python2-pycairo
+  (package
+    (name "python2-pycairo")
+    (version "1.18.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pygobject/pycairo/releases"
+                                  "/download/v" version "/pycairo-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cb5n4r4nl0k1g90b1gz9iyk4lp7hi03db98i1p52a870bym7f6w"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2))
+    (native-inputs
+     (list (S "pkg-config")
+           (S2 "python-pytest")))
+    (propagated-inputs                  ;pycairo.pc references cairo
+     (list (S "cairo")))
+    (home-page "https://cairographics.org/pycairo/")
+    (synopsis "Python bindings for cairo")
+    (description
+     "Pycairo is a set of Python bindings for the Cairo graphics library.")
+    ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
+    (license (list license:lgpl2.1 license:mpl1.1))))
