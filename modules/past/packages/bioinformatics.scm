@@ -1,5 +1,5 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
-;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -28,7 +28,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages statistics)
+  #:use-module (past packages python27))
 
 (define-public couger
   (package
