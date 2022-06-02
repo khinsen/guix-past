@@ -652,7 +652,39 @@ backported for previous versions of Python from 2.4 to 3.3.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (license license:expat))) 
+    (license license:expat)))
+
+(define-python2-package python2-pytest-cov
+  (package
+    (name "python2-pytest-cov")
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-cov" version))
+       (sha256
+        (base32 "0avzlk9p4nc44k7lpx9109dybq71xqnggxb9f4hp0l64pbc44ryc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Options taken from tox.ini.
+             ;; TODO: make "--restructuredtext" tests pass. They currently fail
+             ;; with "Duplicate implicit target name".
+             (invoke "python" "./setup.py" "check"
+                     "--strict" "--metadata"))))))
+    (propagated-inputs
+     (map S2 (list "python-coverage" "python-pytest")))
+    (home-page "https://github.com/pytest-dev/pytest-cov")
+    (synopsis "Pytest plugin for measuring coverage")
+    (description
+     "Pytest-cov produces coverage reports.  It supports centralised testing and
+distributed testing in both @code{load} and @code{each} modes.  It also
+supports coverage of subprocesses.")
+    (license license:expat)))
 
 (define-python2-package python2-cython
   (package
