@@ -92,6 +92,7 @@ NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
   (package-with-explicit-python (delay (default-python2))
                                 "python-" "python2-"))
 
+(define S specification->package)
 (define (S2 spec)
   (cond
    ((hash-ref %python2-package-mapping spec) => force)
@@ -769,3 +770,58 @@ object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
+
+(define-python2-package python2-pillow
+  (package
+    (name "python2-pillow")
+    ;; Version 6 is the last series with Python 2 support.
+    (version "6.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pillow" version))
+       (sha256
+        (base32
+         "0l5rv8jkdrb5q846v60v03mcq64yrhklidjkgwv6s1pda71g17yv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false            ;FIXME: One of the tests is failing.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ldconfig
+           (lambda _
+             (substitute* "setup.py"
+               (("\\['/sbin/ldconfig', '-p'\\]") "['true']"))))
+         (replace 'check
+           (lambda* (#:key outputs inputs tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME"
+                       (getcwd))
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "selftest.py" "--installed")
+               (invoke "python" "-m" "pytest" "-vv")))))))
+    (native-inputs
+     (list (S "python-pytest")))
+    (inputs
+     (list (S "freetype")
+           (S "lcms")
+           (S "libjpeg-turbo")
+           (S "libtiff")
+           (S "libwebp")
+           (S "openjpeg")
+           (S "zlib")))
+    (propagated-inputs
+     (list (S2 "python-olefile")))
+    (home-page "https://python-pillow.org")
+    (synopsis "Fork of the Python Imaging Library")
+    (description
+     "The Python Imaging Library adds image processing capabilities to your
+Python interpreter.  This library provides extensive file format support, an
+efficient internal representation, and fairly powerful image processing
+capabilities.  The core image library is designed for fast access to data
+stored in a few basic pixel formats.  It should provide a solid foundation for
+a general image processing tool.")
+    (properties `((cpe-name . "pillow")))
+    (license (license:x11-style
+              "http://www.pythonware.com/products/pil/license.htm"
+              "The PIL Software License"))))
