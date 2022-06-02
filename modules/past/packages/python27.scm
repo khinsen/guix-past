@@ -906,3 +906,26 @@ a general image processing tool.")
     (license (license:x11-style
               "http://www.pythonware.com/products/pil/license.htm"
               "The PIL Software License"))))
+
+(define-python2-package python2-backports-functools-lru-cache
+  (package
+    (name "python2-backports-functools-lru-cache")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       ;; only the pypi tarballs contain the necessary metadata
+       (uri (pypi-uri "backports.functools_lru_cache" version))
+       (sha256
+        (base32
+         "0jidrkk2w6bhjm197plxiaxrav64mgcrign0bfyr7md2ilc5zplg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     (list (S2 "python-setuptools-scm")))
+    (home-page "https://github.com/jaraco/backports.functools_lru_cache")
+    (synopsis "Backport of functools.lru_cache from Python 3.3")
+    (description "@code{python2-backports-functools-lru-cache} is a backport of
+@code{functools.lru_cache} from Python 3.3.")
+    (license license:expat)))
