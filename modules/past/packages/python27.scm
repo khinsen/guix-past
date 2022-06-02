@@ -785,7 +785,8 @@ capabilities.")
          "0l5rv8jkdrb5q846v60v03mcq64yrhklidjkgwv6s1pda71g17yv"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #false            ;FIXME: One of the tests is failing.
+     `(#:python ,python-2
+       #:tests? #false            ;FIXME: One of the tests is failing.
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-ldconfig
