@@ -1099,3 +1099,91 @@ datetime module, available in Python 2.3+.")
     ;; Apache 2.0/BSD-3 variant at 2017-12-01.  Some code is only available as
     ;; BSD-3 still; but all new code is dual licensed (the user can choose).
     (license (list license:bsd-3 license:asl2.0))))
+
+(define-python2-package python2-matplotlib
+  (package
+    (name "python2-matplotlib")
+    (version "2.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matplotlib" version))
+       (sha256
+        (base32
+         "1sk05fdai9rw35l983rw2ymvz0nafs7szs7yz4nxrpyr1j27l0x3"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:python python-2
+      #:tests? #false                  ;tests were not run in the past
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'pretend-version
+            ;; The version string is usually derived via setuptools-scm, but
+            ;; without the git metadata available, the version string is set to
+            ;; '0.0.0'.
+            (lambda _
+              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
+          (add-before 'build 'configure-environment
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Fix rounding errors when using the x87 FPU.
+              (when (string-prefix? "i686" #$(%current-system))
+                (setenv "CFLAGS" "-ffloat-store"))
+              (call-with-output-file "mplsetup.cfg"
+                (lambda (port)
+                  (format port "\
+[libs]
+system_freetype = true
+system_qhull = true
+
+[rc_options]
+backend=Agg
+
+[directories]
+basedirlist = ~a,~a
+
+[packages]
+tests = True~%" (assoc-ref inputs "tcl") (assoc-ref inputs "tk"))))))
+          (add-after 'install 'create-init-file
+            (lambda _
+              (with-output-to-file
+                  (string-append
+                   #$output
+                   "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
+                (lambda _ (display ""))))))))
+    (native-inputs
+     (map S (list "pkg-config")))
+    (inputs
+     (map S (list "cairo"
+                  "freetype"
+                  "glib"
+                  "libpng"
+                  "qhull"
+                  "tcl"
+                  "tk")))
+    (propagated-inputs
+     (cons (list python-2 "tk")
+           (map S2 (list "gobject-introspection"
+                         "python-backports-functools-lru-cache"
+                         "python-certifi"
+                         "python-cycler"
+                         "python-dateutil"
+                         "python-functools32"
+                         "python-kiwisolver"
+                         "python-numpy"
+                         "python-pillow"
+                         "python-pycairo"
+                         "python-pygobject-2"
+                         "python-pyparsing"
+                         "python-pytz"
+                         "python-six"
+                         "python-subprocess32"))))
+    (home-page "https://matplotlib.org/")
+    (synopsis "2D plotting library for Python")
+    (description
+     "Matplotlib is a Python 2D plotting library which produces publication
+quality figures in a variety of hardcopy formats and interactive environments
+across platforms.  Matplotlib can be used in Python scripts, the python and
+ipython shell, web application servers, and six graphical user interface
+toolkits.")
+    (license license:psfl)))
