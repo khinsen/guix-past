@@ -323,6 +323,46 @@ ambiguities (forward vs. backward slashes, etc.).
      (map S2 (list "python-scandir"
                    "python-six-bootstrap")))))
 
+(define-python2-package python2-setuptools
+  (package
+    (name "python2-setuptools")
+    (version "62.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools" version))
+       (sha256
+        (base32
+         "0sm8n6y6q640cpac9wjyggidbgi4n9la7vs7pwriyvhvgzccp6br"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove included binaries which are used to build self-extracting
+        ;; installers for Windows.
+        ;; TODO: Find some way to build them ourself so we can include them.
+        '(for-each delete-file (find-files "setuptools"
+                                           "^(cli|gui).*\\.exe$")))))
+    (build-system python-build-system)
+    ;; FIXME: Tests require pytest, which itself relies on setuptools.
+    ;; One could bootstrap with an internal untested setuptools.
+    (arguments (list #:tests? #f))
+    (home-page "https://pypi.org/project/setuptools/")
+    (synopsis "Library designed to facilitate packaging Python projects")
+    (description "Setuptools is a fully-featured, stable library designed to
+facilitate packaging Python projects, where packaging includes:
+@itemize
+@item Python package and module definitions
+@item distribution package metadata
+@item test hooks
+@item project installation
+@item platform-specific details.
+@end itemize")
+    ;; TODO: setuptools now bundles the following libraries:
+    ;; packaging, pyparsing, six and appdirs. How to unbundle?
+    (license (list license:psfl         ;setuptools itself
+                   license:expat        ;six, appdirs, pyparsing
+                   license:asl2.0       ;packaging is dual ASL2/BSD-2
+                   license:bsd-2))))
+
 (define-python2-package python2-setuptools-scm
   (package
     (name "python2-setuptools-scm")
