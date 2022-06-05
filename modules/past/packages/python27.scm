@@ -767,7 +767,8 @@ seamlessly into your existing Python unit testing work flow.")
         (base32 "0hw4gs18rh4slij1fg252argxhraypld9apbqbl60230qc3lvw6d"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:python ,python-2
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
