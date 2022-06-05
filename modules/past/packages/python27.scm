@@ -822,6 +822,28 @@ programming language and the extended Cython programming language.  It makes
 writing C extensions for Python as easy as Python itself.")
     (license license:asl2.0)))
 
+;;; This package is unmaintained (see the note at the top of doc/index.rst).
+(define-python2-package python2-nose
+  (package
+    (name "python2-nose")
+    (version "1.3.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nose" version))
+        (sha256
+          (base32
+            "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:tests? #f
+           #:python python-2))
+    (home-page "http://readthedocs.org/docs/nose/")
+    (synopsis "Python testing library")
+    (description
+     "Nose extends the unittest library to make testing easier.")
+    (license license:lgpl2.0+)))
+
 ;; Numpy 1.16.x is the last version that supports Python 2.
 (define-python2-package python2-numpy
   (package
