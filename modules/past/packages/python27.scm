@@ -344,7 +344,7 @@ ambiguities (forward vs. backward slashes, etc.).
     (build-system python-build-system)
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
-    (arguments (list #:tests? #f))
+    (arguments (list #:tests? #f #:python python-2))
     (home-page "https://pypi.org/project/setuptools/")
     (synopsis "Library designed to facilitate packaging Python projects")
     (description "Setuptools is a fully-featured, stable library designed to
