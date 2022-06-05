@@ -27,7 +27,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:export (python2-package))
 
 (define %python2-package-mapping
   ;; Hash table that maps a Python 3.x package to its Python 2.x counterpart.
