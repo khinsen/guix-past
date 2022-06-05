@@ -323,28 +323,31 @@ ambiguities (forward vs. backward slashes, etc.).
      (map S2 (list "python-scandir"
                    "python-six-bootstrap")))))
 
+;; Newer versions of setuptools no longer support Python 2.
 (define-python2-package python2-setuptools
   (package
     (name "python2-setuptools")
-    (version "62.0.0")
+    (version "41.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "setuptools" version))
+       (uri (pypi-uri "setuptools" version ".zip"))
        (sha256
         (base32
-         "0sm8n6y6q640cpac9wjyggidbgi4n9la7vs7pwriyvhvgzccp6br"))
+         "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
        (modules '((guix build utils)))
+       ;; Remove included binaries which are used to build self-extracting
+       ;; installers for Windows.
+       ;; TODO: Find some way to build them ourself so we can include them.
        (snippet
-        ;; Remove included binaries which are used to build self-extracting
-        ;; installers for Windows.
-        ;; TODO: Find some way to build them ourself so we can include them.
-        '(for-each delete-file (find-files "setuptools"
-                                           "^(cli|gui).*\\.exe$")))))
+        '(for-each delete-file (find-files "setuptools" "^(cli|gui).*\\.exe$")))))
     (build-system python-build-system)
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
-    (arguments (list #:tests? #f #:python python-2))
+    (arguments
+     `(#:tests? #f
+       #:python ,python-2))
+    (native-inputs (list (S "unzip")))
     (home-page "https://pypi.org/project/setuptools/")
     (synopsis "Library designed to facilitate packaging Python projects")
     (description "Setuptools is a fully-featured, stable library designed to
