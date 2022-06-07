@@ -1,6 +1,7 @@
 ;;; Guix Past --- Packages from the past for GNU Guix.
 ;;; Copyright © 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2022 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -1019,6 +1020,30 @@ a general image processing tool.")
     (description
      "This package is a backport of the @code{functools} module from Python
 3.2.3 for use with older versions of Python and PyPy.")
+    (license license:expat)))
+
+(define-python2-package python2-singledispatch
+  (package
+    (name "python2-singledispatch")
+    (version "3.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "singledispatch" version))
+       (sha256
+        (base32
+         "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2))
+    (native-inputs
+     (list python2-six))
+    (home-page
+     "https://docs.python.org/3/library/functools.html#functools.singledispatch")
+    (synopsis "Backport of singledispatch feature from Python 3.4")
+    (description
+     "This library brings functools.singledispatch from Python 3.4 to Python
+2.6-3.3.")
     (license license:expat)))
 
 (define-python2-package python2-pygobject-2
