@@ -968,6 +968,29 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
+(define-python2-package python2-openpyxl
+  (package
+    (name "python2-openpyxl")
+    (version "2.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "openpyxl" version))
+              (sha256
+               (base32 "1qzjj8nwj4dn0mhq1j64f136afiqqb81lvqiikipz3g1g0b80lqx"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2
+           #:tests? #f))            ; No tests.
+    (propagated-inputs
+     (map S2 (list "python-et-xmlfile" "python-jdcal")))
+    (home-page "https://openpyxl.readthedocs.io")
+    (synopsis "Python library to read/write Excel 2010 XLSX/XLSM files")
+    (description
+     "This Python library allows reading and writing to the Excel XLSX, XLSM,
+XLTX and XLTM file formats that are defined by the Office Open XML (OOXML)
+standard.")
+    (license license:expat)))
+
 (define-python2-package python2-soupsieve
   (package
     (name "python2-soupsieve")
