@@ -968,6 +968,134 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
+;; Pandas 0.24.x are the last versions that support Python 2.
+(define-python2-package python2-pandas
+  (package
+    (name "python2-pandas")
+    (version "0.24.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pandas" version))
+              (sha256
+               (base32 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Adjust for renamed error message in Python 2.7.17.  Taken
+                  ;; from <https://github.com/pandas-dev/pandas/pull/29294>.
+                  (substitute* "pandas/io/parsers.py"
+                    (("if 'NULL byte' in msg:")
+                     "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
+                  ;; Remove the pre-cythonized files.
+                  (with-directory-excursion "pandas"
+                    (for-each delete-file
+                              (list "io/sas/sas.c"
+                                    "io/msgpack/_unpacker.cpp"
+                                    "io/msgpack/_packer.cpp"
+                                    "_libs/writers.c"
+                                    "_libs/window.cpp"
+                                    "_libs/tslibs/timezones.c"
+                                    "_libs/tslibs/timestamps.c"
+                                    "_libs/tslibs/timedeltas.c"
+                                    "_libs/tslibs/strptime.c"
+                                    "_libs/tslibs/resolution.c"
+                                    "_libs/tslibs/period.c"
+                                    "_libs/tslibs/parsing.c"
+                                    "_libs/tslibs/offsets.c"
+                                    "_libs/tslibs/np_datetime.c"
+                                    "_libs/tslibs/nattype.c"
+                                    "_libs/tslibs/frequencies.c"
+                                    "_libs/tslibs/fields.c"
+                                    "_libs/tslibs/conversion.c"
+                                    "_libs/tslibs/ccalendar.c"
+                                    "_libs/tslib.c"
+                                    "_libs/testing.c"
+                                    "_libs/sparse.c"
+                                    "_libs/skiplist.c"
+                                    "_libs/reshape.c"
+                                    "_libs/reduction.c"
+                                    "_libs/properties.c"
+                                    "_libs/parsers.c"
+                                    "_libs/ops.c"
+                                    "_libs/missing.c"
+                                    "_libs/lib.c"
+                                    "_libs/join.c"
+                                    "_libs/interval.c"
+                                    "_libs/internals.c"
+                                    "_libs/indexing.c"
+                                    "_libs/index.c"
+                                    "_libs/hashtable.c"
+                                    "_libs/hashing.c"
+                                    "_libs/groupby.c"
+                                    "_libs/algos.c")))))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-which
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((which (assoc-ref inputs "which")))
+               (substitute* "pandas/io/clipboard/__init__.py"
+                 (("^CHECK_CMD = .*")
+                  (string-append "CHECK_CMD = \"" which "\"\n"))))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (let ((build-directory
+                    (string-append
+                     (getcwd) "/build/"
+                     (car (scandir "build"
+                                   (cut string-prefix? "lib." <>))))))
+               (when tests?
+                 ;; Disable the "strict data files" option which causes
+                 ;; the build to error out if required data files are
+                 ;; not available (as is the case with PyPI archives).
+                 (substitute* "setup.cfg"
+                   (("addopts = --strict-data-files") "addopts = "))
+                 (with-directory-excursion build-directory
+                   ;; Delete tests that require "moto" which is not yet
+                   ;; in Guix.
+                   (for-each delete-file
+                             '("pandas/tests/io/conftest.py"
+                               "pandas/tests/io/json/test_compression.py"
+                               "pandas/tests/io/parser/test_network.py"
+                               "pandas/tests/io/test_parquet.py"))
+                   (invoke "pytest" "-vv" "pandas" "--skip-slow"
+                           "--skip-network" "-k"
+                           ;; XXX: Due to the deleted tests above.
+                           "not test_read_s3_jsonl")))))))))
+    (propagated-inputs
+     (map S2 (list "python-dateutil"
+                   "python-numpy"
+                   "python-openpyxl"
+                   "python-pytz"
+                   "python-xlrd")))
+    (inputs
+     (list (S "which")))
+    (native-inputs
+     (map S2 (list "python-cython"
+                   ;; For the tests
+                   "python-beautifulsoup4"
+                   "python-html5lib"
+                   "python-hypothesis"
+                   "python-lxml"
+                   "python-nose"
+                   "python-pytest"
+                   "python-pytest-mock")))
+    (home-page "https://pandas.pydata.org")
+    (synopsis "Data structures for data analysis, time series, and statistics")
+    (description
+     "Pandas is a Python package providing fast, flexible, and expressive data
+structures designed to make working with structured (tabular,
+multidimensional, potentially heterogeneous) and time series data both easy
+and intuitive.  It aims to be the fundamental high-level building block for
+doing practical, real world data analysis in Python.")
+    (license license:bsd-3)))
+
 (define-python2-package python2-beautifulsoup4
   (package
     (name "python2-beautifulsoup4")
