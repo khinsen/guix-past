@@ -968,6 +968,30 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
+(define-python2-package python2-beautifulsoup4
+  (package
+    (name "python2-beautifulsoup4")
+    (version "4.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "beautifulsoup4" version))
+              (sha256
+               (base32 "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2))
+    (propagated-inputs
+     (map S2 (list "python-soupsieve" "python-html5lib" "python-lxml")))
+    (home-page "https://www.crummy.com/software/BeautifulSoup/bs4/")
+    (synopsis "Screen-scraping library")
+    (description
+     "Beautiful Soup is a Python library designed for rapidly setting up
+screen-scraping projects.  It offers Pythonic idioms for navigating,
+searching, and modifying a parse tree, providing a toolkit for
+dissecting a document and extracting what you need.  It automatically
+converts incoming documents to Unicode and outgoing documents to UTF-8.")
+    (license license:expat)))
+
 (define-python2-package python2-lxml
   (package
     (name "python2-lxml")
