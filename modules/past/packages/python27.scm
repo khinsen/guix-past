@@ -1585,17 +1585,69 @@ ipython shell, web application servers, and six graphical user interface
 toolkits.")
     (license license:psfl)))
 
-;; Version 1.2.2 is the last version to support Python 2
+;; Version 1.2.x is the last version to support Python 2
 (define-python2-package python2-scipy
   (package
     (name "python2-scipy")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "scipy" version))
               (sha256
                (base32
-                "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))
+                "0myaghgjf5pqlxzx20669sq827h0mh1s7gvmhjgy3f4hr89n9gpc"))
+              (snippet
+               #~(begin
+                   (use-modules (guix build utils))
+                   ;; Remove the pre-cythonized files.
+                   (with-directory-excursion "scipy"
+                     (for-each delete-file
+                               (list "cluster/_hierarchy.c"
+                                     "cluster/_optimal_leaf_ordering.c"
+                                     "cluster/_vq.c"
+                                     "interpolate/_bspl.c"
+                                     "interpolate/interpnd.c"
+                                     "interpolate/_ppoly.c"
+                                     "io/matlab/mio5_utils.c"
+                                     "io/matlab/mio_utils.c"
+                                     "io/matlab/streams.c"
+                                     "_lib/_ccallback_c.c"
+                                     "_lib/messagestream.c"
+                                     "linalg/cython_blas.c"
+                                     "linalg/cython_lapack.c"
+                                     "linalg/_decomp_update.c"
+                                     "linalg/_solve_toeplitz.c"
+                                     "ndimage/src/_cytest.c"
+                                     "ndimage/src/_ni_label.c"
+                                     "optimize/_group_columns.c"
+                                     "optimize/_lsq/givens_elimination.c"
+                                     "optimize/_trlib/_trlib.c"
+                                     "signal/_max_len_seq_inner.c"
+                                     "signal/_peak_finding_utils.c"
+                                     "signal/_spectral.c"
+                                     "signal/_upfirdn_apply.c"
+                                     "sparse/csgraph/_min_spanning_tree.c"
+                                     "sparse/csgraph/_reordering.c"
+                                     "sparse/csgraph/_shortest_path.c"
+                                     "sparse/csgraph/_tools.c"
+                                     "sparse/csgraph/_traversal.c"
+                                     "sparse/_csparsetools.c"
+                                     "spatial/ckdtree.cxx"
+                                     "spatial/ckdtree.h"
+                                     "spatial/_hausdorff.c"
+                                     "spatial/qhull.c"
+                                     "spatial/_voronoi.c"
+                                     "special/_comb.c"
+                                     "special/cython_special.c"
+                                     "special/cython_special.h"
+                                     "special/_ellip_harm_2.c"
+                                     "special/_ellip_harm_2.h"
+                                     "special/_test_round.c"
+                                     "special/_ufuncs.c"
+                                     "special/_ufuncs_cxx.cxx"
+                                     "special/_ufuncs_cxx.h"
+                                     "special/_ufuncs.h"
+                                     "stats/_stats.c")))))))
     (build-system python-build-system)
     (arguments
      (list
@@ -1623,6 +1675,9 @@ toolkits.")
           (add-after 'unpack 'disable-pythran
             (lambda _
               (setenv "SCIPY_USE_PYTHRAN" "0")))
+          (add-before 'build 'cythonize-files
+            (lambda _
+              (invoke "python" "tools/cythonize.py")))
           (add-before 'build 'change-home-dir
             (lambda _
               ;; Change from /homeless-shelter to /tmp for write permission.
