@@ -732,6 +732,32 @@ distributed testing in both @code{load} and @code{each} modes.  It also
 supports coverage of subprocesses.")
     (license license:expat)))
 
+(define-python2-package python2-mock
+  (package
+    (name "python2-mock")
+    (version "3.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mock" version))
+       (sha256
+        (base32 "1hrp6j0yrx2xzylfv02qa8kph661m6yq4p0mc8fnimch9j4psrc3"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2
+           ;; Tests require "pytest", which depends on this package.
+           #:tests? #f))
+    (propagated-inputs
+     (map S2 (list "python-funcsigs" "python-six")))
+    (home-page "https://github.com/testing-cabal/mock")
+    (synopsis "Python mocking and patching library for testing")
+    (description
+     "Mock is a library for testing in Python.  It allows you to replace parts
+of your system under test with mock objects and make assertions about how they
+have been used.  This library is now part of Python (since Python 3.3),
+available via the @code{unittest.mock} module.")
+    (license license:expat)))
+
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-python2-package python2-hypothesis
   (package
