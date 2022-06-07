@@ -732,6 +732,28 @@ distributed testing in both @code{load} and @code{each} modes.  It also
 supports coverage of subprocesses.")
     (license license:expat)))
 
+(define-python2-package python2-pytest-mock
+  (package
+    (name "python2-pytest-mock")
+    (version "1.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-mock" version))
+              (sha256
+               (base32
+                "1mdfwqswc3ipgjdx3xflaq5lilvwnmch00y7php04wv7r4g92jp2"))))
+    (build-system python-build-system)
+    (arguments (list #:python python-2))
+    (propagated-inputs
+     (map S2 (list "python-mock" "python-pytest")))
+    (native-inputs
+     (list (S2 "python-setuptools-scm")))
+    (home-page "https://github.com/pytest-dev/pytest-mock/")
+    (synopsis "Thin-wrapper around the mock package for easier use with pytest")
+    (description
+     "Thin-wrapper around the mock package for easier use with pytest")
+    (license license:expat)))
+
 (define-python2-package python2-mock
   (package
     (name "python2-mock")
