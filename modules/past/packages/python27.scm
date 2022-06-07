@@ -901,7 +901,7 @@ writing C extensions for Python as easy as Python itself.")
 (define-python2-package python2-numpy
   (package
     (name "python2-numpy")
-    (version "1.16.5")
+    (version "1.16.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -909,7 +909,11 @@ writing C extensions for Python as easy as Python itself.")
                     version "/numpy-" version ".tar.gz"))
               (sha256
                (base32
-                "0lg1cycxzi4rvvrd5zxinpdz0ni792fpx6xjd75z1923zcac8qrb"))))
+                "0xw7y0yk1rgsga9c6bmixrvpvfprqslhs2shb6crcrc7qzd2smk1"))
+              (snippet
+               #~(begin
+                   ;; Remove the pre-cythonized files.
+                   (delete-file "./numpy/random/mtrand/mtrand.c")))))
     (build-system python-build-system)
     (arguments
      (list
@@ -919,6 +923,10 @@ writing C extensions for Python as easy as Python itself.")
                   (ice-9 format))
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'build 'cythonize-files
+            (lambda _
+              (with-directory-excursion "numpy/random/mtrand"
+                (invoke "python" "generate_mtrand_c.py"))))
           (add-before 'build 'parallelize-build
             (lambda _
               (setenv "NPY_NUM_BUILD_JOBS"
