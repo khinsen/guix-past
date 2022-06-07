@@ -968,6 +968,55 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
+(define-python2-package python2-lxml
+  (package
+    (name "python2-lxml")
+    (version "4.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lxml" version))
+       (sha256
+        (base32 "1jn4gbd1qxrbdli6x0bihi5rkm1h4qmfxqny9pa90bx8qgnfv13f"))
+       (snippet
+        #~(begin
+            (use-modules (guix build utils))
+            ;; Remove the pre-cythonized files.
+            (with-directory-excursion "src/lxml"
+              (for-each delete-file
+                        (list "sax.c"
+                              "objectify.c"
+                              "lxml.etree_api.h"
+                              "lxml.etree.h"
+                              "html/diff.c"
+                              "html/clean.c"
+                              "etree_api.h"
+                              "etree.h"
+                              "etree.c"
+                              "builder.c"
+                              "_elementpath.c")))))))
+    (build-system python-build-system)
+    (arguments
+     (list
+       #:python python-2
+       #:phases
+       #~(modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "make" "test")))))))
+    (inputs
+     (list (S "libxml2")
+           (S "libxslt")))
+    (native-inputs
+     (list (S2 "python-cython")))
+    (home-page "https://lxml.de/")
+    (synopsis "Python XML processing library")
+    (description
+     "The lxml XML toolkit is a Pythonic binding for the C libraries
+libxml2 and libxslt.")
+    (license license:bsd-3))) ; and a few more, see LICENSES.txt
+
 (define-python2-package python2-openpyxl
   (package
     (name "python2-openpyxl")
