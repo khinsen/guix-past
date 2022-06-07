@@ -968,6 +968,31 @@ and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
     (license license:bsd-3)))
 
+(define-python2-package python2-soupsieve
+  (package
+    (name "python2-soupsieve")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "soupsieve" version))
+              (sha256
+               (base32 "0in9rc9q3h8w5b4qf7kvl3qxcvw6vrz35ckblchgf70hm6pg3dbj"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:python python-2
+           #:tests? #f))    ; Prevent a circular dependency on beautifulsoup4.
+    (propagated-inputs
+     (list python2-backports-functools-lru-cache))
+    (home-page "https://github.com/facelessuser/soupsieve")
+    (synopsis "CSS selector library")
+    (description
+     "Soup Sieve is a CSS selector library designed to be used with Beautiful
+Soup 4.  It aims to provide selecting, matching, and filtering using modern
+CSS selectors.  Soup Sieve currently provides selectors from the CSS level 1
+specifications up through the latest CSS level 4 drafts and beyond (though
+some are not yet implemented).")
+    (license license:expat)))
+
 (define-python2-package python2-pillow
   (package
     (name "python2-pillow")
