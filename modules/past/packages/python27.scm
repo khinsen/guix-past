@@ -1803,3 +1803,31 @@ atlas_libs = openblas~%"  #$(this-package-input "openblas"))))))
 the SciPy stack.  It provides many user-friendly and efficient numerical
 routines such as routines for numerical integration and optimization.")
     (license license:bsd-3)))
+
+(define-python2-package python2-pyro
+  (package
+    (name "python2-pyro")
+    (version "3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyro" version))
+       (file-name (string-append "Pyro-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y75wzdqbjy565rpxaxscav4j8xg060sa90lnmb7aypgaf251v8v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Pyro has no test cases for automatic execution
+       #:python ,python-2))
+    (home-page "https://pythonhosted.org/Pyro/")
+    (synopsis "Distributed object manager for Python")
+    (description "Pyro is a Distributed Object Technology system
+written in Python that is designed to be easy to use.  It resembles
+Java's Remote Method Invocation (RMI).  It has less similarity to CORBA,
+which is a system and language independent Distributed Object Technology
+and has much more to offer than Pyro or RMI.  Pyro 3.x is no
+longer maintained.  New projects should use Pyro4 instead, which
+is the new Pyro version that is actively developed.")
+    (license license:expat)))
+
