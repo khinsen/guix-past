@@ -24,6 +24,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages python)
   #:use-module (past packages python27))
 
@@ -56,3 +57,76 @@ domains by comparing two protein structures, or from normal mode analysis on a
 single structure.  The software is currently not actively maintained and works
 only with Python 2 and NumPy < 1.9.")
     (license license:cecill-c)))
+
+(define with-numpy-1.8
+  (package-input-rewriting `((,python2-numpy . ,python2-numpy-1.8))))
+
+(define-public nmoldyn
+  (package
+    (name "nmoldyn")
+    (version "3.0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/nMOLDYN3")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "02b5i6il26kqg3dkrln7vcix8i3306ynsk776gzd5cwninhygdqh"))))
+    (build-system python-build-system)
+    (inputs
+     (list (with-numpy-1.8 python2-matplotlib) python2-scientific
+           (specification->package "gv")))
+    (propagated-inputs
+     (list python2-mmtk (specification->package "netcdf")))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-directory-case
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "nMOLDYN/Tests/AnalysisTests.py"
+               (("from nMoldyn")
+                "from nMOLDYN"))))
+         (add-before 'build 'create-linux2-directory
+           (lambda _
+             (mkdir-p "nMOLDYN/linux2")))
+         (add-before 'build 'change-PDF-viewer
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "nMOLDYN/Preferences.py"
+               ;; Set the paths for external executables, substituting
+               ;; gv for acroread.
+               ;; There is also vmd_path, but VMD is not free software
+               ;; and Guix contains currently no free molecular viewer that
+               ;; could be substituted.
+               (("PREFERENCES\\['acroread_path'\\] = ''")
+                (format #f "PREFERENCES['acroread_path'] = '~a'"
+                        (which "gv")))
+               (("PREFERENCES\\['ncdump_path'\\] = ''")
+                (format #f "PREFERENCES['ncdump_path'] = '~a'"
+                        (which "ncdump")))
+               (("PREFERENCES\\['ncgen_path'\\] = ''")
+                (format #f "PREFERENCES['ncgen_path'] = '~a'"
+                        (which "ncgen3")))
+               (("PREFERENCES\\['task_manager_path'\\] = ''")
+                (format #f "PREFERENCES['task_manager_path'] = '~a'"
+                        (which "task_manager")))
+               ;; Show documentation as PDF
+               (("PREFERENCES\\['documentation_style'\\] = 'html'")
+                "PREFERENCES['documentation_style'] = 'pdf'") )))
+         (delete 'sanity-check)
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "nMOLDYN/Tests"
+                   (invoke "python" "AnalysisTests.py"))))))))
+    (home-page "http://dirac.cnrs-orleans.fr/nMOLDYN.html")
+    (synopsis "Analysis software for Molecular Dynamics trajectories")
+    (description "nMOLDYN is an interactive analysis program for Molecular Dynamics
+simulations.  It is especially designed for the computation and decomposition of
+neutron scattering spectra, but also computes other quantities.  The software
+is currently not actively maintained and works only with Python 2 and
+NumPy < 1.9.")
+    (license license:cecill)))
