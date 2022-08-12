@@ -2,6 +2,7 @@
 ;;; Copyright © 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2022 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2022 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of Guix Past.
 ;;;
@@ -974,6 +975,78 @@ with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
+    (license license:bsd-3)))
+
+;; Numpy 1.8.2 is the last version that supports the compatibility interface
+;; with NumPy's predecessor Numeric.
+(define-python2-package python2-numpy-1.8
+  (package
+    (name "python2-numpy")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
+       (file-name (string-append "python2-numpy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sc20gz1b17xnyrkp5frca3ql5qfalpv916hfg2kqxpwr6jg0f1g"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:python python-2
+      #:modules '((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 format))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'cythonize-files
+            (lambda _
+              (with-directory-excursion "numpy/random/mtrand"
+                (invoke "python" "generate_mtrand_c.py"))))
+          (add-before 'build 'configure-blas
+            (lambda* (#:key inputs #:allow-other-keys)
+              (call-with-output-file "site.cfg"
+                (lambda (port)
+                  (format port
+                          "\
+[openblas]
+libraries = openblas
+library_dirs = ~a/lib
+include_dirs = ~:*~a/include~%" #$(this-package-input "openblas"))))))
+          (add-before 'build 'fix-executable-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
+              ;; instead of /bin/sh.
+              (substitute* "numpy/distutils/exec_command.py"
+                (("'/bin/sh'")
+                 (format #f "~s" (search-input-file inputs "bin/bash"))))))
+          ;; (add-after 'unpack 'delete-failing-tests
+          ;;   (lambda _
+          ;;     ;; test_who_with_0dim_array fails with the message
+          ;;     ;; "ticket #1243", which suggests it was a known problem
+          ;;     ;; at the time.
+          ;;     (delete-file "numpy/lib/tests/test_regression.py")))
+          (replace 'check
+            ;; Older versions don't cope well with the extra Pytest
+            ;; options, so remove them.
+            (lambda* (#:key tests? outputs inputs #:allow-other-keys)
+              (when tests?
+                (invoke "./runtests.py" "-vv" "--no-build" "--mode=fast")))))))
+    (inputs
+     (map specification->package
+          (list "bash" "openblas")))
+    (native-inputs (list python2-nose))
+    (home-page "https://numpy.org")
+    (synopsis "Fundamental package for scientific computing with Python")
+    (description "NumPy is the fundamental package for scientific computing
+with Python.  It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.  Version 1.8 is the last one to contain the numpy.oldnumeric API
+that includes the compatibility layer numpy.oldnumeric with NumPy's predecessor
+Numeric.")
     (license license:bsd-3)))
 
 ;; Pandas 0.24.x are the last versions that support Python 2.
