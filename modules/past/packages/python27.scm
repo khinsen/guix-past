@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages maths)
   #:export (python2-package))
 
 (define %python2-package-mapping
@@ -1831,3 +1832,38 @@ longer maintained.  New projects should use Pyro4 instead, which
 is the new Pyro version that is actively developed.")
     (license license:expat)))
 
+(define-python2-package python2-scientific
+  (package
+    (name "python2-scientific")
+    (version "2.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ScientificPython" version))
+       (sha256
+        (base32
+         "14dncpnmv4n9rj974ay9k7rq06ifcq7pdw8xg6rk71v0k7f465p4"))))
+    (build-system python-build-system)
+    (inputs
+     (list (S "netcdf")))
+    (propagated-inputs
+     (list python2-numpy-1.8 python2-pyro))
+    (arguments
+     ;; ScientificPython is not compatible with Python 3
+     `(#:python ,python-2
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "python" "setup.py" "build"
+                     (string-append "--netcdf_prefix="
+                                    (assoc-ref inputs "netcdf"))))))))
+    (home-page "http://dirac.cnrs-orleans.fr/ScientificPython")
+    (synopsis "Python modules for scientific computing")
+    (description "ScientificPython is a collection of Python modules that are
+useful for scientific computing.  Most modules are rather general (Geometry,
+physical units, automatic derivatives, ...) whereas others are more
+domain-specific (e.g. netCDF and PDB support).  The library is currently
+not actively maintained and works only with Python 2 and NumPy < 1.9.")
+    (license license:cecill-c)))
