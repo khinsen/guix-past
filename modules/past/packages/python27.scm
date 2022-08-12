@@ -1634,22 +1634,24 @@ tests = True~%" (assoc-ref inputs "tcl") (assoc-ref inputs "tk"))))))
                   "tcl"
                   "tk")))
     (propagated-inputs
-     (cons (list python-2 "tk")
-           (map S2 (list "gobject-introspection"
-                         "python-backports-functools-lru-cache"
-                         "python-certifi"
-                         "python-cycler"
-                         "python-dateutil"
-                         "python-functools32"
-                         "python-kiwisolver"
-                         "python-numpy"
-                         "python-pillow"
-                         "python-pycairo"
-                         "python-pygobject-2"
-                         "python-pyparsing"
-                         "python-pytz"
-                         "python-six"
-                         "python-subprocess32"))))
+     (append (list (list python-2 "tk")
+                   python2-dateutil
+                   python2-functools32
+                   python2-numpy
+                   python2-pillow
+                   python2-pycairo
+                   python2-pygobject-2
+                   python2-pyparsing
+                   python2-six
+                   python2-subprocess32)
+             ;; Use specifications for the packages that are
+             ;; taken from the main Guix distribution.
+             (map S2 (list "gobject-introspection"
+                           "python-backports-functools-lru-cache"
+                           "python-certifi"
+                           "python-cycler"
+                           "python-kiwisolver"
+                           "python-pytz"))))
     (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
