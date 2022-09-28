@@ -26,6 +26,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (past packages python27))
 
 (define-public domainfinder
@@ -130,3 +131,41 @@ neutron scattering spectra, but also computes other quantities.  The software
 is currently not actively maintained and works only with Python 2 and
 NumPy < 1.9.")
     (license license:cecill)))
+
+(define-public python2-gromacstrajectoryreader
+  (package
+   (name "python2-gromacstrajectoryreader")
+   (version "0.13")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/khinsen/GromacsTrajectoryReader")
+            (commit (string-append "v" version))))
+     (sha256
+      (base32
+       "00k4ygrvji2kwlyaq8a57a4qlzd61bc38dcqjk6h0zkawfilmzjf"))))
+   (build-system python-build-system)
+   (propagated-inputs
+    (list python2-numpy-1.8))
+   (native-inputs
+    (list python2-cython))
+   (inputs
+    (list libtirpc))
+   (arguments
+    `(#:python ,python-2
+      #:phases (modify-phases %standard-phases
+                  (add-before 'build 'set-libtirpc-include-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Allow <rpc/rpc.h> & co. to be found.
+                      (let ((tirpc (string-append (assoc-ref inputs "libtirpc")
+                                                  "/include/tirpc")))
+                        (if (getenv "CPATH")
+                          (setenv "CPATH"
+                                  (string-append (getenv "CPATH")
+                                                 ":" tirpc))
+                          (setenv "CPATH" tirpc))))))))
+   (home-page "http://github.com/khinsen/GromacsTrajectoryReader")
+   (synopsis "Reader for Molecular Dynamics trajectories in GROMACS format")
+   (description "Reader for Molecular Dynamics trajectories in GROMACS format")
+   (license license:cecill-c)))
