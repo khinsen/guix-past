@@ -169,3 +169,26 @@ NumPy < 1.9.")
    (synopsis "Reader for Molecular Dynamics trajectories in GROMACS format")
    (description "Reader for Molecular Dynamics trajectories in GROMACS format")
    (license license:cecill-c)))
+
+(define-public gromacstrajectoryconverter
+  (package
+   (name "gromacstrajectoryconverter")
+   (version "0.1")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/khinsen/GromacsTrajectoryConverter")
+            (commit (string-append "v" version))))
+     (sha256
+      (base32
+       "0fi6r84yk3274by3wnlr0d1f6xx84rz1j1a2yzgs3sqlk20qmmyj"))))
+   (build-system python-build-system)
+   (inputs
+    (list python2-gromacstrajectoryreader python2-mmtk))
+   (arguments
+    `(#:python ,python-2))
+   (home-page "http://github.com/khinsen/GromacsTrajectoryConverter")
+   (synopsis "Converter from GROMACS XTC trajectories to MMTK/netCDF format")
+   (description "Converter from GROMACS XTC trajectories to MMTK/netCDF format")
+   (license license:cecill)))
